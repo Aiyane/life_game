@@ -3,6 +3,7 @@ from tkinter import *
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
 from life_game.mapping import Mapping
+import time
 
 
 class Game(object):
@@ -93,7 +94,19 @@ class Game(object):
                     self.cv.delete(self.canvas_map[x][y])
                     self.canvas_map[x][y] = None
 
-        self.cv.after(self.mapping.sleep, self.paint)
+        # self.cv.after(self.mapping.sleep, self.paint)
+
+    def pause(self):
+        self.is_continue = False
+    
+    def go(self):
+        self.is_continue = True
+    
+    def control(self):
+        time.sleep(self.mapping.sleep/10000)
+        if self.is_continue:
+            self.paint()
+            self.cv.after(self.mapping.sleep, self.control)
 
     def __init__(self):
         self.root.title('生命游戏')
@@ -114,6 +127,8 @@ class Game(object):
         #: 生命游戏的画布
         self.cv = Canvas(self.root, width=self.window_width,
                          height=self.window_height, bg='white')
+
+        self.is_continue = True
 
     def start(self):
         """游戏开始"""
@@ -143,5 +158,5 @@ class Game(object):
                                                                      (y+1)*self.cell_size+dot_y1,
                                                                      fill="black")
 
-        self.paint()
+        self.control()
         self.root.mainloop()
