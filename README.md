@@ -7,6 +7,9 @@ python3
 ## 安装
 python setup.py install
 
+## 测试
+python test.py
+
 ## 配置
 |参数|描述|默认|
 |:---:|:---:|:---:|
