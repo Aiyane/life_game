@@ -1,6 +1,7 @@
-from life_game import Game
+from life_game import Game, Control
 import settings
 
 game = Game()
 game.config.from_object(settings)
-game.start()
+control = Control(game)
+control.start()

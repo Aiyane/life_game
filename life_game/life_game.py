@@ -3,7 +3,6 @@ from tkinter import *
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
 from life_game.mapping import Mapping
-import time
 
 
 class Game(object):
@@ -79,7 +78,7 @@ class Game(object):
         'CANVAS_MARGIN_LEFT':                   135,
     })
 
-    def paint(self):
+    def _paint(self):
         self.mapping.generate_next()
 
         for x in range(self.mapping.map_x+1):
@@ -93,20 +92,10 @@ class Game(object):
                 elif not self.mapping.game_map[x][y].status and self.canvas_map[x][y]:
                     self.cv.delete(self.canvas_map[x][y])
                     self.canvas_map[x][y] = None
-
-        # self.cv.after(self.mapping.sleep, self.paint)
-
-    def pause(self):
-        self.is_continue = False
     
-    def go(self):
-        self.is_continue = True
-    
-    def control(self):
-        time.sleep(self.mapping.sleep/10000)
-        if self.is_continue:
-            self.paint()
-            self.cv.after(self.mapping.sleep, self.control)
+    def paint(self):
+        self._paint()
+        self.cv.after(self.mapping.sleep, self.paint)
 
     def __init__(self):
         self.root.title('生命游戏')
@@ -130,7 +119,7 @@ class Game(object):
 
         self.is_continue = True
 
-    def start(self):
+    def _start(self):
         """游戏开始"""
         self.mapping = Mapping(self.column_nums, self.row_nums,
                                self.sleep_time, self.init_cells, self.debug)
@@ -157,6 +146,8 @@ class Game(object):
                                                                      (x+1)*self.cell_size+dot_x1,
                                                                      (y+1)*self.cell_size+dot_y1,
                                                                      fill="black")
-
-        self.control()
+    
+    def start(self):
+        self._start()
+        self.paint()
         self.root.mainloop()
