@@ -80,18 +80,16 @@ class Game(object):
 
     def paint(self):
         self.mapping.generate_next()
-        # self.cv.delete(ALL)
 
         for x in range(self.mapping.map_x+1):
             for y in range(self.mapping.map_y+1):
                 if self.mapping.game_map[x][y].status and not self.canvas_map[x][y]:
-                    cell = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left, 
-                                                    y*self.cell_size+self.canvas_margin_top, 
-                                                    (x+1)*self.cell_size+self.canvas_margin_left, 
-                                                    (y+1)*self.cell_size+self.canvas_margin_top, 
-                                                    fill="black")
-                    self.canvas_map[x][y] = cell
-                if not self.mapping.game_map[x][y].status and self.canvas_map[x][y]:
+                    self.canvas_map[x][y] = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left,
+                                                                     y*self.cell_size+self.canvas_margin_top,
+                                                                     (x+1)*self.cell_size+self.canvas_margin_left,
+                                                                     (y+1)*self.cell_size+self.canvas_margin_top,
+                                                                     fill="black")
+                elif not self.mapping.game_map[x][y].status and self.canvas_map[x][y]:
                     self.cv.delete(self.canvas_map[x][y])
                     self.canvas_map[x][y] = None
 
@@ -122,17 +120,28 @@ class Game(object):
         self.mapping = Mapping(self.column_nums, self.row_nums,
                                self.sleep_time, self.init_cells, self.debug)
         self.cv.pack()
+        # 边框
+        dot_x1 = self.canvas_margin_left
+        dot_y1 = self.canvas_margin_top
+        dot_x2 = self.cell_size*(self.mapping.map_x+1)+self.canvas_margin_left
+        dot_y2 = self.cell_size*(self.mapping.map_y+1)+self.canvas_margin_top
 
-        self.canvas_map = [[None for __ in range(self.mapping.map_y+1)] for __ in range(self.mapping.map_x+1)]
+        self.cv.create_line(dot_x1, dot_y1, dot_x2, dot_y1)
+        self.cv.create_line(dot_x1, dot_y1, dot_x1, dot_y2)
+        self.cv.create_line(dot_x2, dot_y1, dot_x2, dot_y2)
+        self.cv.create_line(dot_x1, dot_y2, dot_x2, dot_y2)
+
+        # 初始化地图
+        self.canvas_map = [[None for __ in range(self.mapping.map_y+1)] 
+                            for __ in range(self.mapping.map_x+1)]
         for x in range(self.mapping.map_x+1):
             for y in range(self.mapping.map_y+1):
                 if self.mapping.game_map[x][y].status:
-                    cell = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left, 
-                                                    y*self.cell_size+self.canvas_margin_top, 
-                                                    (x+1)*self.cell_size+self.canvas_margin_left, 
-                                                    (y+1)*self.cell_size+self.canvas_margin_top, 
-                                                    fill="black")
-                    self.canvas_map[x][y] = cell
+                    self.canvas_map[x][y] = self.cv.create_rectangle(x*self.cell_size+dot_x1,
+                                                                     y*self.cell_size+dot_y1,
+                                                                     (x+1)*self.cell_size+dot_x1,
+                                                                     (y+1)*self.cell_size+dot_y1,
+                                                                     fill="black")
 
         self.paint()
         self.root.mainloop()
