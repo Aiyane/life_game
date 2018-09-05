@@ -74,8 +74,8 @@ class Cell(object):
             for j in range(y-1, y+2):
                 if ((i != x or j != y) and
                     i >= 0 and j >= 0 and
-                    i < mapping.map_x and
-                    j < mapping.map_y and
+                    i <= mapping.map_x and
+                    j <= mapping.map_y and
                         game_map[i][j].status):
                     count += 1
 
