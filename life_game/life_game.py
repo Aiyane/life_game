@@ -70,7 +70,7 @@ class Game(object):
         'WINDOW_HEIGHT':                        600,
         'MARGIN_TOP':                           200,
         'MARGIN_LEFT':                          500,
-        'SLEEP_TIME':                           300,
+        'SLEEP_TIME':                           500,
         'WINDOW_CHANGE':                        False,
         'INIT_CELLS':                           None,
         'CELL_SIZE':                            10,
@@ -117,7 +117,7 @@ class Game(object):
 
     def start(self):
         """游戏开始"""
-        self.mapping = Mapping(self.row_nums, self.column_nums,
+        self.mapping = Mapping(self.column_nums, self.row_nums,
                                self.sleep_time, self.init_cells, self.debug)
         self.paint()
         self.root.mainloop()
