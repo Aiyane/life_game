@@ -80,19 +80,21 @@ class Game(object):
 
     def paint(self):
         self.mapping.generate_next()
-        self.cv.delete(ALL)
+        # self.cv.delete(ALL)
 
         for x in range(self.mapping.map_x+1):
             for y in range(self.mapping.map_y+1):
-                color = "black" if self.mapping.game_map[x][y].status else "white"
+                if self.mapping.game_map[x][y].status and not self.canvas_map[x][y]:
+                    cell = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left, 
+                                                    y*self.cell_size+self.canvas_margin_top, 
+                                                    (x+1)*self.cell_size+self.canvas_margin_left, 
+                                                    (y+1)*self.cell_size+self.canvas_margin_top, 
+                                                    fill="black")
+                    self.canvas_map[x][y] = cell
+                if not self.mapping.game_map[x][y].status and self.canvas_map[x][y]:
+                    self.cv.delete(self.canvas_map[x][y])
+                    self.canvas_map[x][y] = None
 
-                self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left, 
-                                         y*self.cell_size+self.canvas_margin_top, 
-                                         (x+1)*self.cell_size+self.canvas_margin_left, 
-                                         (y+1)*self.cell_size+self.canvas_margin_top, 
-                                         fill=color)
-
-        self.cv.pack()
         self.cv.after(self.mapping.sleep, self.paint)
 
     def __init__(self):
@@ -119,5 +121,18 @@ class Game(object):
         """游戏开始"""
         self.mapping = Mapping(self.column_nums, self.row_nums,
                                self.sleep_time, self.init_cells, self.debug)
+        self.cv.pack()
+
+        self.canvas_map = [[None for __ in range(self.mapping.map_y+1)] for __ in range(self.mapping.map_x+1)]
+        for x in range(self.mapping.map_x+1):
+            for y in range(self.mapping.map_y+1):
+                if self.mapping.game_map[x][y].status:
+                    cell = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left, 
+                                                    y*self.cell_size+self.canvas_margin_top, 
+                                                    (x+1)*self.cell_size+self.canvas_margin_left, 
+                                                    (y+1)*self.cell_size+self.canvas_margin_top, 
+                                                    fill="black")
+                    self.canvas_map[x][y] = cell
+
         self.paint()
         self.root.mainloop()
