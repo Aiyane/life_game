@@ -7,7 +7,7 @@ class TestCell(unittest.TestCase):
 
     def test_init(self):
         cell = Cell(True, 4, 5)
-        self.assertEqual(cell.status, True)
+        self.assertEqual(cell.lived, True)
         self.assertEqual(cell.next, False)
         self.assertEqual(cell.x, 4)
         self.assertEqual(cell.y, 5)
@@ -18,11 +18,11 @@ class TestCell(unittest.TestCase):
         cell.x = 7
         cell.y = 8
         cell.next = True
-        cell.status = False
+        cell.lived = False
         self.assertEqual(cell.x, 7)
         self.assertEqual(cell.y, 8)
         self.assertEqual(cell.next, True)
-        self.assertEqual(cell.status, False)
+        self.assertEqual(cell.lived, False)
 
     def test_look_up(self):
         mapping = Mapping(5, 5, dot_map=[[0, 1], [1, 0], [1, 2],
@@ -69,9 +69,9 @@ class TestMapping(unittest.TestCase):
                 if (cell.x == 0 and cell.y == 1 or
                     cell.x == 2 and cell.y == 3 or
                         cell.x == 1 and cell.y == 0):
-                    self.assertEqual(cell.status, True)
+                    self.assertEqual(cell.lived, True)
                 else:
-                    self.assertEqual(cell.status, False)
+                    self.assertEqual(cell.lived, False)
 
     def test_generate_next(self):
         mapping = Mapping(5, 5, dot_map=[[0, 1], [1, 0], [1, 2],
@@ -84,9 +84,9 @@ class TestMapping(unittest.TestCase):
                 if (cell.x == 0 and cell.y == 1 or
                     cell.x == 1 and cell.y == 1 or
                         cell.x == 2 and cell.y == 1):
-                    self.assertEqual(cell.status, True)
+                    self.assertEqual(cell.lived, True)
                 else:
-                    self.assertEqual(cell.status, False)
+                    self.assertEqual(cell.lived, False)
 
 
 class Env(object):

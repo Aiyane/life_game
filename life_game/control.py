@@ -5,7 +5,7 @@ from life_game import Game
 class Control(object):
     def __init__(self):
         self.game = Game()
-        self.is_continue = True
+        self.update_cells = True
         self.paint_nums = 0
         self.loop_nums = 0
 
@@ -47,10 +47,10 @@ class Control(object):
                 yield self.mapping.game_map[x][y]
 
     def pause(self):
-        self.is_continue = False
+        self.update_cells = False
 
     def go(self):
-        self.is_continue = True
+        self.update_cells = True
 
     def start(self):
         self.before_init_mapping()
@@ -80,7 +80,7 @@ class Control(object):
     def control(self):
         self.loop_nums += 1
 
-        if self.is_continue:
+        if self.update_cells:
             self.before_paint()
             self.mapping.generate_next()
 
