@@ -2,9 +2,25 @@ import time
 from life_game import Game
 
 
-class Control(object):
+class NotInitError(Exception):
+    pass
+
+
+class BaseConrol(type):
+    def __new__(cls, name, bases, attrs):
+        cls = super(BaseConrol, cls).__new__(cls, name, bases, attrs)
+        if name == 'Control':
+            setattr(cls, 'game', Game())
+        else:
+            setattr(cls, 'parent', super(cls))
+            for attr in dir(cls):
+                if attr.upper() in cls.game.config:
+                    setattr(cls.game, attr, getattr(cls, attr))
+        return cls
+
+
+class Control(object, metaclass=BaseConrol):
     def __init__(self):
-        self.game = Game()
         self.update_cells = True
         self.paint_nums = 0
         self.loop_nums = 0
@@ -13,7 +29,13 @@ class Control(object):
     def mapping(self):
         if hasattr(self.game, 'mapping'):
             return self.game.mapping
-        return None
+        raise NotInitError("`game.mapping` 没有初始化, 尝试先调用 `init_mapping` 函数")
+
+    @property
+    def canvas(self):
+        if hasattr(self.game, 'cv'):
+            return self.game.cv
+        raise NotInitError("`game.cv` 没有初始化, 尝试先调用 `init_canvas` 函数")
 
     @property
     def map_x(self):
@@ -31,10 +53,6 @@ class Control(object):
     def config(self):
         return self.game.config
 
-    @property
-    def cv(self):
-        return self.game.cv
-
     def get_cell_position(self, x, y):
         return (x*self.game.cell_size+self.game.canvas_margin_left,
                 y*self.game.cell_size+self.game.canvas_margin_top,
@@ -46,26 +64,28 @@ class Control(object):
             for y in range(self.map_y+1):
                 yield self.mapping.game_map[x][y]
 
-    def pause(self):
-        self.update_cells = False
-
-    def go(self):
-        self.update_cells = True
-
     def start(self):
+        self.init_window()
+        self.init_canvas()
         self.init_mapping()
         self.next_control_func()
         self.root.mainloop()
         self.finally_event()
     
+    def init_window(self):
+        self.game._init_window()
+    
+    def init_canvas(self):
+        self.game._init_canvas()
+
     def init_mapping(self):
-        self.game.init_mapping()
+        self.game._init_mapping()
 
     def next_control_func(self):
         self.before_control()
         self.control()
         self.after_control()
-    
+
     def before_control(self):
         self.loop_nums += 1
 
@@ -79,16 +99,16 @@ class Control(object):
         self.mapping.generate_next()
 
     def paint(self):
-        self.game.paint()
-    
+        self.game._paint()
+
     def after_paint(self):
         self.paint_nums += 1
-    
+
     def sleep(self):
         return self.mapping.sleep
-    
+
     def after_control(self):
-        self.cv.after(self.sleep(), self.next_control_func)
+        self.canvas.after(self.sleep(), self.next_control_func)
 
     def finally_event(self):
         print("再见!")
