@@ -87,7 +87,7 @@ class Game(object):
                                                               y*self.cell_size+self.canvas_margin_top,
                                                               (x+1)*self.cell_size+self.canvas_margin_left,
                                                               (y+1)*self.cell_size+self.canvas_margin_top,
-                                                              fill="black")
+                                                              fill=self.cell_color, outline=self.cell_color)
                 elif not cell.lived and cell.shape_obj:
                     self.cv.delete(cell.shape_obj)
                     cell.shape_obj = None
@@ -116,11 +116,13 @@ class Game(object):
         #: 生命游戏的画布
         self.cv = Canvas(self.root, width=self.window_width,
                          height=self.window_height, bg='white')
+        
+        self.cv.pack()
+        self.cell_color = "black"
 
     def init_mapping(self):
         self.mapping = Mapping(self.column_nums, self.row_nums,
                                self.sleep_time, self.init_cells, self.debug)
-        self.cv.pack()
         # 边框
         dot_x1 = self.canvas_margin_left
         dot_y1 = self.canvas_margin_top
@@ -141,7 +143,7 @@ class Game(object):
                                                               y*self.cell_size+dot_y1,
                                                               (x+1)*self.cell_size+dot_x1,
                                                               (y+1)*self.cell_size+dot_y1,
-                                                              fill="black")
+                                                              fill=self.cell_color, outline=self.cell_color)
     
     def start(self):
         """游戏开始"""
