@@ -78,24 +78,24 @@ class Game(object):
         'CANVAS_MARGIN_LEFT':                   135,
     })
 
-    def _paint(self):
-        self.mapping.generate_next()
-
+    def paint(self):
         for x in range(self.mapping.map_x+1):
             for y in range(self.mapping.map_y+1):
-                if self.mapping.game_map[x][y].status and not self.canvas_map[x][y]:
-                    self.canvas_map[x][y] = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left,
-                                                                     y*self.cell_size+self.canvas_margin_top,
-                                                                     (x+1)*self.cell_size+self.canvas_margin_left,
-                                                                     (y+1)*self.cell_size+self.canvas_margin_top,
-                                                                     fill="black")
-                elif not self.mapping.game_map[x][y].status and self.canvas_map[x][y]:
-                    self.cv.delete(self.canvas_map[x][y])
-                    self.canvas_map[x][y] = None
+                cell = self.mapping.game_map[x][y]
+                if cell.lived and not cell.shape_obj:
+                    cell.shape_obj = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left,
+                                                                  y*self.cell_size+self.canvas_margin_top,
+                                                                  (x+1)*self.cell_size+self.canvas_margin_left,
+                                                                  (y+1)*self.cell_size+self.canvas_margin_top,
+                                                                  fill="black")
+                elif not cell.lived and cell.shape_obj:
+                    self.cv.delete(cell.shape_obj)
+                    cell.shape_obj = None
     
-    def paint(self):
-        self._paint()
-        self.cv.after(self.mapping.sleep, self.paint)
+    def loop_paint(self):
+        self.mapping.generate_next()
+        self.paint()
+        self.cv.after(self.mapping.sleep, self.loop_paint)
 
     def __init__(self):
         self.root.title('生命游戏')
@@ -117,9 +117,7 @@ class Game(object):
         self.cv = Canvas(self.root, width=self.window_width,
                          height=self.window_height, bg='white')
 
-        self.is_continue = True
-
-    def _start(self):
+    def init_mapping(self):
         """游戏开始"""
         self.mapping = Mapping(self.column_nums, self.row_nums,
                                self.sleep_time, self.init_cells, self.debug)
@@ -136,18 +134,17 @@ class Game(object):
         self.cv.create_line(dot_x1, dot_y2, dot_x2, dot_y2)
 
         # 初始化地图
-        self.canvas_map = [[None for __ in range(self.mapping.map_y+1)] 
-                            for __ in range(self.mapping.map_x+1)]
         for x in range(self.mapping.map_x+1):
             for y in range(self.mapping.map_y+1):
-                if self.mapping.game_map[x][y].status:
-                    self.canvas_map[x][y] = self.cv.create_rectangle(x*self.cell_size+dot_x1,
-                                                                     y*self.cell_size+dot_y1,
-                                                                     (x+1)*self.cell_size+dot_x1,
-                                                                     (y+1)*self.cell_size+dot_y1,
-                                                                     fill="black")
+                cell = self.mapping.game_map[x][y]
+                if cell.lived:
+                    cell.shape_obj = self.cv.create_rectangle(x*self.cell_size+dot_x1,
+                                                              y*self.cell_size+dot_y1,
+                                                              (x+1)*self.cell_size+dot_x1,
+                                                              (y+1)*self.cell_size+dot_y1,
+                                                              fill="black")
     
     def start(self):
-        self._start()
-        self.paint()
+        self.init_mapping()
+        self.loop_paint()
         self.root.mainloop()

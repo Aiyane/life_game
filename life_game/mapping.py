@@ -15,8 +15,8 @@ class Mapping(object):
 
     def print_cells(self):
         for row in self.game_map:
-            status = [cell.status for cell in row]
-            print(status)
+            lived = [cell.lived for cell in row]
+            print(lived)
 
     def random_init_cells(self):
         cells = []
@@ -38,7 +38,7 @@ class Mapping(object):
             dot_map = self.random_init_cells()
 
         for x, y in dot_map:
-            self.game_map[x][y].status = True
+            self.game_map[x][y].lived = True
 
         if self.debug:
             print("\n初始化生命游戏:")
@@ -51,7 +51,7 @@ class Mapping(object):
 
         for row in self.game_map:
             for cell in row:
-                cell.status = cell.next
+                cell.lived = cell.next
 
         if self.debug:
             print("")
@@ -59,11 +59,12 @@ class Mapping(object):
 
 
 class Cell(object):
-    def __init__(self, status, x, y):
-        self.status = status
+    def __init__(self, lived, x, y):
+        self.lived = lived
         self.next = False
         self.x = x
         self.y = y
+        self.shape_obj = None
 
     def look_up(self, mapping):
         game_map = mapping.game_map
@@ -76,10 +77,10 @@ class Cell(object):
                     i >= 0 and j >= 0 and
                     i <= mapping.map_x and
                     j <= mapping.map_y and
-                        game_map[i][j].status):
+                        game_map[i][j].lived):
                     count += 1
 
         if count == 2:
-            self.next = self.status
+            self.next = self.lived
         else:
             self.next = True if count == 3 else False
