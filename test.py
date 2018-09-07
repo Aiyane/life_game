@@ -45,7 +45,6 @@ class TestMapping(unittest.TestCase):
         mapping = Mapping(3, 4)
         self.assertEqual(mapping.map_x, 3)
         self.assertEqual(mapping.map_y, 4)
-        self.assertEqual(mapping.sleep, 500)
         self.assertEqual(mapping.debug, False)
         self.assertTrue(isinstance(mapping, Mapping))
 
