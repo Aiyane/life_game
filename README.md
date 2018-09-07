@@ -58,8 +58,14 @@ game.start()
 
 控制流程
 > start()
+>> init_window()
+>>>`self.game._init_window()`
+>>
+>> init_canvas()
+>>>`self.game._init_canvas()`
+>>
 >> init_mapping()
->>>`self.game.init_mapping()`
+>>>`self.game._init_mapping()`
 >>
 >>next_control_func()
 >>>before_control()
@@ -70,7 +76,7 @@ game.start()
 >>>>>`self.mapping.generate_next()`
 >>>>
 >>>>paint()
->>>>>`self.game.paint()`
+>>>>>`self.game._paint()`
 >>>>
 >>>>after_paint()
 >>>>>`self.paint_nums += 1`
