@@ -2,13 +2,12 @@ import random
 
 
 class Mapping(object):
-    def __init__(self, x, y, sleep=500, dot_map=None, debug=False):
+    def __init__(self, x, y, dot_map=None, debug=False):
         """"初始化
         param x: 地图宽
         param y: 地图高
         param dot_map: 初始化活得细胞 list
         """
-        self.sleep = sleep
         self.debug = debug
         self.init_game_map(x, y)
         self.init_cells(dot_map)

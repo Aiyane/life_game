@@ -60,6 +60,10 @@ class Game(object):
     #: 画布距离窗口左部距离
     #: 默认为: `135`
     canvas_margin_left = ConfigAttribute('CANVAS_MARGIN_LEFT')
+    
+    #: 细胞颜色
+    #: 默认为: `black`
+    cell_color = ConfigAttribute('CELL_COLOR')
 
     #: 默认配置参数
     default_config = ImmutableDict({
@@ -76,53 +80,37 @@ class Game(object):
         'CELL_SIZE':                            10,
         'CANVAS_MARGIN_TOP':                    50,
         'CANVAS_MARGIN_LEFT':                   135,
+        'CELL_COLOR':                           "black"
     })
-
-    def paint(self):
-        for x in range(self.mapping.map_x+1):
-            for y in range(self.mapping.map_y+1):
-                cell = self.mapping.game_map[x][y]
-                if cell.lived and not cell.shape_obj:
-                    cell.shape_obj = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left,
-                                                              y*self.cell_size+self.canvas_margin_top,
-                                                              (x+1)*self.cell_size+self.canvas_margin_left,
-                                                              (y+1)*self.cell_size+self.canvas_margin_top,
-                                                              fill=self.cell_color, outline=self.cell_color)
-                elif not cell.lived and cell.shape_obj:
-                    self.cv.delete(cell.shape_obj)
-                    cell.shape_obj = None
-    
-    def loop_paint(self):
-        self.mapping.generate_next()
-        self.paint()
-        self.cv.after(self.mapping.sleep, self.loop_paint)
 
     def __init__(self):
         self.root.title('生命游戏')
-
         #: 当前配置
         self.config = Config(self.default_config)
 
-        #: 初始化窗口
-        self.root.geometry(''.join([str(self.window_width), 'x',
-                                    str(self.window_height), '+',
-                                    str(self.margin_left), '+',
-                                    str(self.margin_top)]))
+    def start(self):
+        """游戏开始"""
+        self._init_window()
+        self._init_canvas()
+        self._init_mapping()
+        self.loop_paint()
+        self.root.mainloop()
 
+    def _init_window(self):
+        #: 初始化窗口
+        self.root.geometry(''.join([str(self.window_width), 'x', str(self.window_height), '+',
+                                    str(self.margin_left), '+', str(self.margin_top)]))
         #: 窗口大小是否可以改变
         self.root.resizable(width=self.window_change,
                             height=self.window_change)
-
+    
+    def _init_canvas(self):
         #: 生命游戏的画布
-        self.cv = Canvas(self.root, width=self.window_width,
-                         height=self.window_height, bg='white')
-        
+        self.cv = Canvas(self.root, width=self.window_width, height=self.window_height, bg='white')
         self.cv.pack()
-        self.cell_color = "black"
-
-    def init_mapping(self):
-        self.mapping = Mapping(self.column_nums, self.row_nums,
-                               self.sleep_time, self.init_cells, self.debug)
+    
+    def _init_mapping(self):
+        self.mapping = Mapping(self.column_nums, self.row_nums, self.init_cells, self.debug)
         # 边框
         dot_x1 = self.canvas_margin_left
         dot_y1 = self.canvas_margin_top
@@ -145,8 +133,22 @@ class Game(object):
                                                               (y+1)*self.cell_size+dot_y1,
                                                               fill=self.cell_color, outline=self.cell_color)
     
-    def start(self):
-        """游戏开始"""
-        self.init_mapping()
-        self.loop_paint()
-        self.root.mainloop()
+    def loop_paint(self):
+        self.mapping.generate_next()
+        self._paint()
+        self.cv.after(self.sleep_time, self.loop_paint)
+
+
+    def _paint(self):
+        for x in range(self.mapping.map_x+1):
+            for y in range(self.mapping.map_y+1):
+                cell = self.mapping.game_map[x][y]
+                if cell.lived and not cell.shape_obj:
+                    cell.shape_obj = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left,
+                                                              y*self.cell_size+self.canvas_margin_top,
+                                                              (x+1)*self.cell_size+self.canvas_margin_left,
+                                                              (y+1)*self.cell_size+self.canvas_margin_top,
+                                                              fill=self.cell_color, outline=self.cell_color)
+                elif not cell.lived and cell.shape_obj:
+                    self.cv.delete(cell.shape_obj)
+                    cell.shape_obj = None
