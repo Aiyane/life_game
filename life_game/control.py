@@ -53,26 +53,20 @@ class Control(object):
         self.update_cells = True
 
     def start(self):
-        self.before_init_mapping()
         self.init_mapping()
-        self.after_init_mapping()
         self.next_control_func()
-        self.finally_event()
         self.root.mainloop()
+        self.finally_event()
 
     def next_control_func(self):
         self.before_control()
         self.control()
         self.after_control()
-        self.cv.after(self.sleep(), self.next_control_func)
 
     def control(self):
-        self.loop_nums += 1
-
         if self.update_cells:
             self.before_paint()
             self.paint()
-            self.paint_nums += 1
             self.after_paint()
 
     def paint(self):
@@ -87,15 +81,14 @@ class Control(object):
     def before_paint(self):
         self.mapping.generate_next()
 
-    def before_init_mapping(self):
-        pass
-    def after_init_mapping(self):
-        pass
-    def before_control(self):
-        pass
-    def after_control(self):
-        pass
-    def after_paint(self):
-        pass
     def finally_event(self):
-        pass
+        print("再见!")
+
+    def after_control(self):
+        self.cv.after(self.sleep(), self.next_control_func)
+
+    def after_paint(self):
+        self.paint_nums += 1
+
+    def before_control(self):
+        self.loop_nums += 1

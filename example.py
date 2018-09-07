@@ -3,19 +3,10 @@ import settings
 
 
 class MyControl(Control):
-    def before_init_mapping(self):
-        # 初始化为红色
-        self.game.cell_color = "red"
-
     def init_mapping(self):
         # 重载初始化地图, 去除边框
-        self.game.mapping = Mapping(self.game.column_nums, self.game.row_nums, self.game.sleep_time, 
-                                    self.game.init_cells, self.game.debug)
-        for cell in self.get_cells():
-            if cell.lived:
-                cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y), 
-                                                          fill=self.game.cell_color, 
-                                                          outline=self.game.cell_color)
+        self.game.cell_color = "red"
+        self.game.init_mapping()
 
     def sleep(self):
         if self.paint_nums % 5 == 0:
