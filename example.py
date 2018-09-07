@@ -4,10 +4,8 @@ import settings
 
 class MyControl(Control):
     def before_control(self):
-        if hasattr(self, 'sleep'):
+        if self.paint_nums > 0 and self.paint_nums % 10 == 0:
             delattr(self, 'sleep')
-
-        if self.paint_nums % 10 == 0:
             for cell in self.get_cells():
                 if cell.shape_obj:
                     self.cv.itemconfig(cell.shape_obj, fill="black", outline='black')

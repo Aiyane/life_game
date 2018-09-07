@@ -84,10 +84,10 @@ class Game(object):
                 cell = self.mapping.game_map[x][y]
                 if cell.lived and not cell.shape_obj:
                     cell.shape_obj = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left,
-                                                                  y*self.cell_size+self.canvas_margin_top,
-                                                                  (x+1)*self.cell_size+self.canvas_margin_left,
-                                                                  (y+1)*self.cell_size+self.canvas_margin_top,
-                                                                  fill="black")
+                                                              y*self.cell_size+self.canvas_margin_top,
+                                                              (x+1)*self.cell_size+self.canvas_margin_left,
+                                                              (y+1)*self.cell_size+self.canvas_margin_top,
+                                                              fill="black")
                 elif not cell.lived and cell.shape_obj:
                     self.cv.delete(cell.shape_obj)
                     cell.shape_obj = None
@@ -118,7 +118,6 @@ class Game(object):
                          height=self.window_height, bg='white')
 
     def init_mapping(self):
-        """游戏开始"""
         self.mapping = Mapping(self.column_nums, self.row_nums,
                                self.sleep_time, self.init_cells, self.debug)
         self.cv.pack()
@@ -145,6 +144,7 @@ class Game(object):
                                                               fill="black")
     
     def start(self):
+        """游戏开始"""
         self.init_mapping()
         self.loop_paint()
         self.root.mainloop()
