@@ -8,7 +8,6 @@ class Control(object):
         self.is_continue = True
         self.paint_nums = 0
         self.loop_nums = 0
-        self.closed_default_paint = False
 
     @property
     def mapping(self):
@@ -60,7 +59,7 @@ class Control(object):
             self.init_mapping()
         else:
             self.game.init_mapping()
-            
+
         self.after_init_mapping()
         self.next_control_func()
         self.finally_event()
@@ -85,7 +84,7 @@ class Control(object):
             self.before_paint()
             self.mapping.generate_next()
 
-            if self.closed_default_paint and hasattr(self, 'paint'):
+            if hasattr(self, 'paint'):
                 self.paint()
             else:
                 self.game.paint()
