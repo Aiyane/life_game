@@ -54,12 +54,7 @@ class Control(object):
 
     def start(self):
         self.before_init_mapping()
-
-        if hasattr(self, 'init_mapping'):
-            self.init_mapping()
-        else:
-            self.game.init_mapping()
-
+        self.init_mapping()
         self.after_init_mapping()
         self.next_control_func()
         self.finally_event()
@@ -69,29 +64,29 @@ class Control(object):
         self.before_control()
         self.control()
         self.after_control()
-
-        if hasattr(self, 'sleep'):
-            sleep_time = self.sleep
-        else:
-            sleep_time = self.mapping.sleep
-
-        self.cv.after(sleep_time, self.next_control_func)
+        self.cv.after(self.sleep(), self.next_control_func)
 
     def control(self):
         self.loop_nums += 1
 
         if self.update_cells:
             self.before_paint()
-            self.mapping.generate_next()
-
-            if hasattr(self, 'paint'):
-                self.paint()
-            else:
-                self.game.paint()
-
+            self.paint()
             self.paint_nums += 1
             self.after_paint()
-    
+
+    def paint(self):
+        self.game.paint()
+
+    def sleep(self):
+        return self.mapping.sleep
+
+    def init_mapping(self):
+        self.game.init_mapping()
+
+    def before_paint(self):
+        self.mapping.generate_next()
+
     def before_init_mapping(self):
         pass
     def after_init_mapping(self):
@@ -99,8 +94,6 @@ class Control(object):
     def before_control(self):
         pass
     def after_control(self):
-        pass
-    def before_paint(self):
         pass
     def after_paint(self):
         pass
