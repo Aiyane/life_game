@@ -57,11 +57,17 @@ class Control(object):
         self.next_control_func()
         self.root.mainloop()
         self.finally_event()
+    
+    def init_mapping(self):
+        self.game.init_mapping()
 
     def next_control_func(self):
         self.before_control()
         self.control()
         self.after_control()
+    
+    def before_control(self):
+        self.loop_nums += 1
 
     def control(self):
         if self.update_cells:
@@ -69,26 +75,20 @@ class Control(object):
             self.paint()
             self.after_paint()
 
-    def paint(self):
-        self.game.paint()
-
-    def sleep(self):
-        return self.mapping.sleep
-
-    def init_mapping(self):
-        self.game.init_mapping()
-
     def before_paint(self):
         self.mapping.generate_next()
 
-    def finally_event(self):
-        print("再见!")
-
+    def paint(self):
+        self.game.paint()
+    
+    def after_paint(self):
+        self.paint_nums += 1
+    
+    def sleep(self):
+        return self.mapping.sleep
+    
     def after_control(self):
         self.cv.after(self.sleep(), self.next_control_func)
 
-    def after_paint(self):
-        self.paint_nums += 1
-
-    def before_control(self):
-        self.loop_nums += 1
+    def finally_event(self):
+        print("再见!")
