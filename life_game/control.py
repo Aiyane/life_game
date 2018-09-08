@@ -12,7 +12,6 @@ class BaseConrol(type):
         if name == 'Control':
             setattr(cls, 'game', Game())
         else:
-            setattr(cls, 'parent', super(cls))
             for attr in dir(cls):
                 if attr.upper() in cls.game.config:
                     setattr(cls.game, attr, getattr(cls, attr))

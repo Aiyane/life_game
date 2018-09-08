@@ -14,7 +14,7 @@ class MyControl(Control):
 
     def before_paint(self):
         # 每隔5代改变一次颜色
-        self.parent.before_paint()
+        self.mapping.generate_next()
         if self.paint_nums > 0 and self.paint_nums % 5 == 0:
             self.game.cell_color = "blue" if self.game.cell_color == "red" else "red"
             for cell in self.get_cells():
