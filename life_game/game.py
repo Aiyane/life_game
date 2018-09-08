@@ -90,13 +90,13 @@ class Game(object):
 
     def start(self):
         """游戏开始"""
-        self._init_window()
-        self._init_canvas()
-        self._init_mapping()
+        self.init_window()
+        self.init_canvas()
+        self.init_mapping()
         self.loop_paint()
         self.root.mainloop()
 
-    def _init_window(self):
+    def init_window(self):
         #: 初始化窗口
         self.root.geometry(''.join([str(self.window_width), 'x', str(self.window_height), '+',
                                     str(self.margin_left), '+', str(self.margin_top)]))
@@ -104,7 +104,7 @@ class Game(object):
         self.root.resizable(width=self.window_change,
                             height=self.window_change)
     
-    def _init_canvas(self):
+    def init_canvas(self):
         #: 生命游戏的画布
         self.cv = Canvas(self.root, width=self.window_width, height=self.window_height, bg='white')
         self.cv.pack()
@@ -120,7 +120,7 @@ class Game(object):
             for y in range(self.mapping.map_y+1):
                 yield self.mapping.game_map[x][y]
     
-    def _init_mapping(self):
+    def init_mapping(self):
         self.mapping = Mapping(self.column_nums, self.row_nums, self.init_cells, self.debug)
         # 边框
         dot_x1 = self.canvas_margin_left
@@ -141,11 +141,11 @@ class Game(object):
     
     def loop_paint(self):
         self.mapping.generate_next()
-        self._paint()
+        self.paint()
         self.cv.after(self.sleep_time, self.loop_paint)
 
 
-    def _paint(self):
+    def paint(self):
         for cell in self.get_cells():
             if cell.lived and not cell.shape_obj:
                 cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y),

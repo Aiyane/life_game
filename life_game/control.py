@@ -76,9 +76,9 @@ class Control(object, metaclass=BaseConrol):
         使用该对象的方法来得到图像的位置属性,大小属性
         """
         return (x*self.get_cell_size()+self.get_canvas_margin_left(),
-        y*self.get_cell_size()+self.get_canvas_margin_top(),
-        (x+1)*self.get_cell_size()+self.get_canvas_margin_left(),
-        (y+1)*self.get_cell_size()+self.get_canvas_margin_top())
+                y*self.get_cell_size()+self.get_canvas_margin_top(),
+                (x+1)*self.get_cell_size()+self.get_canvas_margin_left(),
+                (y+1)*self.get_cell_size()+self.get_canvas_margin_top())
 
     def get_cells(self):
         for cell in self.game.get_cells():
@@ -93,13 +93,13 @@ class Control(object, metaclass=BaseConrol):
         self.finally_event()
     
     def init_window(self):
-        self.game._init_window()
+        self.game.init_window()
     
     def init_canvas(self):
-        self.game._init_canvas()
+        self.game.init_canvas()
 
     def init_mapping(self):
-        self.game._init_mapping()
+        self.game.init_mapping()
 
     def next_control_func(self):
         self.before_control()
