@@ -20,9 +20,9 @@ class Mapping(object):
     def random_init_cells(self):
         cells = []
         for i in range(random.randint(1, self.map_x*self.map_y)):
-            cell = [random.randint(0, self.map_x),
-                    random.randint(0, self.map_y)]
-            cells.append(cell)
+            x = random.randint(0, self.map_x)
+            y = random.randint(0, self.map_y)
+            cells.append([x, y])
         return cells
 
     def init_game_map(self, x, y):
@@ -72,12 +72,13 @@ class Cell(object):
         count = 0
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
-                if ((i != x or j != y) and
-                    i >= 0 and j >= 0 and
-                    i <= mapping.map_x and
-                    j <= mapping.map_y and
-                        game_map[i][j].lived):
-                    count += 1
+                con1 = i != x or j != y
+                con2 = i >= 0 and j >= 0
+                con3 = i <= mapping.map_x and j <= mapping.map_y 
+
+                if con1 and con2 and con3:
+                    if game_map[i][j].lived:
+                        count += 1
 
         if count == 2:
             self.next = self.lived

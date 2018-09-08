@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Tk, Canvas
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
 from life_game import Mapping
@@ -64,6 +64,10 @@ class Game(object):
     #: 默认为: `black`
     cell_color = ConfigAttribute('CELL_COLOR')
 
+    #: 画布背景
+    #: 默认为: `white`
+    background = ConfigAttribute('BACKGROUND')
+
     #: 默认配置参数
     default_config = ImmutableDict({
         'DEBUG':                                False,
@@ -79,7 +83,8 @@ class Game(object):
         'CELL_SIZE':                            10,
         'CANVAS_MARGIN_TOP':                    50,
         'CANVAS_MARGIN_LEFT':                   135,
-        'CELL_COLOR':                           "black"
+        'CELL_COLOR':                           "black",
+        'BACKGROUND':                           "white",
     })
 
     def __init__(self):
@@ -98,22 +103,37 @@ class Game(object):
 
     def init_window(self):
         #: 初始化窗口
-        self.root.geometry(''.join([str(self.window_width), 'x', str(self.window_height), '+',
-                                    str(self.margin_left), '+', str(self.margin_top)]))
+        width = str(self.window_width)
+        height = str(self.window_height)
+        left = str(self.margin_left)
+        top = str(self.margin_top)
+
+        self.root.geometry(''.join([width, 'x', height, '+', left, '+', top]))
         #: 窗口大小是否可以改变
-        self.root.resizable(width=self.window_change,
-                            height=self.window_change)
+        is_change = self.window_change
+        self.root.resizable(width=is_change, height=is_change)
     
     def init_canvas(self):
         #: 生命游戏的画布
-        self.cv = Canvas(self.root, width=self.window_width, height=self.window_height, bg='white')
+        root = self.root
+        width = self.window_width
+        height = self.window_height
+        bg = self.background
+
+        self.cv = Canvas(root, width=width, height=height, bg=bg)
         self.cv.pack()
 
     def get_cell_position(self, x, y):
-        return (x*self.cell_size+self.canvas_margin_left,
-                y*self.cell_size+self.canvas_margin_top,
-                (x+1)*self.cell_size+self.canvas_margin_left,
-                (y+1)*self.cell_size+self.canvas_margin_top)
+        size = self.cell_size
+        left = self.canvas_margin_left
+        top = self.canvas_margin_top
+
+        x1 = x * size + left
+        y1 = y * size + top
+        x2 = (x + 1) * size + left
+        y2 = (y + 1) * size + top
+
+        return x1, y1, x2, y2
 
     def get_cells(self):
         for x in range(self.mapping.map_x+1):
@@ -123,21 +143,22 @@ class Game(object):
     def init_mapping(self):
         self.mapping = Mapping(self.column_nums, self.row_nums, self.init_cells, self.debug)
         # 边框
-        dot_x1 = self.canvas_margin_left
-        dot_y1 = self.canvas_margin_top
-        dot_x2 = self.cell_size*(self.mapping.map_x+1)+self.canvas_margin_left
-        dot_y2 = self.cell_size*(self.mapping.map_y+1)+self.canvas_margin_top
+        x1 = self.canvas_margin_left
+        y1 = self.canvas_margin_top
+        x2 = self.cell_size*(self.mapping.map_x+1)+self.canvas_margin_left
+        y2 = self.cell_size*(self.mapping.map_y+1)+self.canvas_margin_top
 
-        self.cv.create_line(dot_x1, dot_y1, dot_x2, dot_y1)
-        self.cv.create_line(dot_x1, dot_y1, dot_x1, dot_y2)
-        self.cv.create_line(dot_x2, dot_y1, dot_x2, dot_y2)
-        self.cv.create_line(dot_x1, dot_y2, dot_x2, dot_y2)
+        self.cv.create_line(x1, y1, x2, y1)
+        self.cv.create_line(x1, y1, x1, y2)
+        self.cv.create_line(x2, y1, x2, y2)
+        self.cv.create_line(x1, y2, x2, y2)
 
         # 初始化地图
         for cell in self.get_cells():
             if cell.lived:
-                cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y),
-                                                          fill=self.cell_color, outline=self.cell_color)
+                coordins = self.get_cell_position(cell.x, cell.y)
+                color = self.cell_color
+                cell.shape_obj = self.cv.create_rectangle(*coordins, fill=color, outline=color)
     
     def loop_paint(self):
         self.mapping.generate_next()
@@ -148,8 +169,10 @@ class Game(object):
     def paint(self):
         for cell in self.get_cells():
             if cell.lived and not cell.shape_obj:
-                cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y),
-                                                          fill=self.cell_color, outline=self.cell_color)
+                coordins = self.get_cell_position(cell.x, cell.y)
+                color = self.cell_color
+                cell.shape_obj = self.cv.create_rectangle(*coordins, fill=color, outline=color)
+
             elif not cell.lived and cell.shape_obj:
                 self.cv.delete(cell.shape_obj)
                 cell.shape_obj = None

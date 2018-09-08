@@ -54,19 +54,19 @@ class Control(object, metaclass=BaseConrol):
     @property
     def config(self):
         return self.game.config
-    
+
     def get_sleep_time(self):
         return self.game.sleep_time
-    
+
     def get_cell_color(self):
         return self.game.cell_color
-    
+
     def get_cell_size(self):
         return self.game.cell_size
-    
+
     def get_canvas_margin_left(self):
         return self.game.canvas_margin_left
-    
+
     def get_canvas_margin_top(self):
         return self.game.canvas_margin_top
 
@@ -74,10 +74,16 @@ class Control(object, metaclass=BaseConrol):
         """重载获取位置,细胞大小函数
         使用该对象的方法来得到图像的位置属性,大小属性
         """
-        return (x*self.get_cell_size()+self.get_canvas_margin_left(),
-                y*self.get_cell_size()+self.get_canvas_margin_top(),
-                (x+1)*self.get_cell_size()+self.get_canvas_margin_left(),
-                (y+1)*self.get_cell_size()+self.get_canvas_margin_top())
+        size = self.get_cell_size()
+        left = self.get_canvas_margin_left()
+        top = self.get_canvas_margin_top()
+
+        x1 = x * size + left
+        y1 = y * size + top
+        x2 = (x + 1) * size + left
+        y2 = (y + 1) * size + top
+
+        return x1, y1, x2, y2
 
     def get_cells(self):
         for cell in self.game.get_cells():
@@ -90,10 +96,10 @@ class Control(object, metaclass=BaseConrol):
         self.control_loop()
         self.root.mainloop()
         self.finally_event()
-    
+
     def init_window(self):
         self.game.init_window()
-    
+
     def init_canvas(self):
         self.game.init_canvas()
 
@@ -119,6 +125,7 @@ class Control(object, metaclass=BaseConrol):
         保证每一次画图都是将全部活细胞重新绘制
         """
         self.mapping.generate_next()
+
         for cell in self.get_cells():
             if cell.lived and cell.shape_obj:
                 self.canvas.delete(cell.shape_obj)
@@ -129,11 +136,15 @@ class Control(object, metaclass=BaseConrol):
         使用该对象的方法来得到图像的属性
         """
         for cell in self.get_cells():
-            if cell.lived and not cell.shape_obj:
-                cell.shape_obj = self.canvas.create_rectangle(*self.get_cell_position(cell.x, cell.y),
-                                                              fill=self.get_cell_color(), 
-                                                              outline=self.get_cell_color())
-            elif not cell.lived and cell.shape_obj:
+            lived = cell.lived
+            shaped = cell.shape_obj
+
+            if lived and not shaped:
+                coordins = self.get_cell_position(cell.x, cell.y)
+                color = self.get_cell_color()
+                cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
+
+            elif not lived and shaped:
                 self.canvas.delete(cell.shape_obj)
                 cell.shape_obj = None
 
@@ -141,7 +152,8 @@ class Control(object, metaclass=BaseConrol):
         self.paint_nums += 1
 
     def after_control(self):
-        self.canvas.after(self.get_sleep_time(), self.control_loop)
+        sleep_time = self.get_sleep_time()
+        self.canvas.after(sleep_time, self.control_loop)
 
     def finally_event(self):
         print("再见!")
