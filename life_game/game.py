@@ -1,8 +1,7 @@
-import os
 from tkinter import *
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
-from life_game.mapping import Mapping
+from life_game import Mapping
 
 
 class Game(object):

@@ -1,4 +1,3 @@
-import time
 from life_game import Game
 
 
