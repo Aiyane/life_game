@@ -92,18 +92,32 @@ class Control(object, metaclass=BaseConrol):
 
     def before_paint(self):
         self.mapping.generate_next()
+        for cell in self.get_cells():
+            if cell.lived and cell.shape_obj:
+                self.canvas.delete(cell.shape_obj)
+                cell.shape_obj = None
 
     def paint(self):
-        self.game._paint()
+        for cell in self.get_cells():
+            if cell.lived and not cell.shape_obj:
+                cell.shape_obj = self.canvas.create_rectangle(*self.get_cell_position(cell.x, cell.y),
+                                                              fill=self.get_cell_color(), 
+                                                              outline=self.get_cell_color())
+            elif not cell.lived and cell.shape_obj:
+                self.canvas.delete(cell.shape_obj)
+                cell.shape_obj = None
 
     def after_paint(self):
         self.paint_nums += 1
 
-    def sleep(self):
+    def get_sleep_time(self):
         return self.game.sleep_time
+    
+    def get_cell_color(self):
+        return self.game.cell_color
 
     def after_control(self):
-        self.canvas.after(self.sleep(), self.next_control_func)
+        self.canvas.after(self.get_sleep_time(), self.next_control_func)
 
     def finally_event(self):
         print("再见!")
