@@ -42,11 +42,11 @@ class Control(object, metaclass=BaseConrol):
 
     @property
     def map_x(self):
-        return self.game.mapping.map_x
+        return self.mapping.map_x
 
     @property
     def map_y(self):
-        return self.game.mapping.map_y
+        return self.mapping.map_y
 
     @property
     def root(self):
