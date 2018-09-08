@@ -55,36 +55,3 @@ game.config.from_object(settings)
 game.start()
 ```
 运行 `python test.py`
-
-控制流程
-> start()
->> init_window()
->>>`self.game._init_window()`
->>
->> init_canvas()
->>>`self.game._init_canvas()`
->>
->> init_mapping()
->>>`self.game._init_mapping()`
->>
->>next_control_func()
->>>before_control()
->>>>`self.loop_nums += 1`
->>>
->>>control()
->>>>before_paint()
->>>>>`self.mapping.generate_next()`
->>>>
->>>>paint()
->>>>>`self.game._paint()`
->>>>
->>>>after_paint()
->>>>>`self.paint_nums += 1`
->>>
->>>after_control()
->>>>`self.cv.after(self.sleep(),self.next_control_func)`
->>
->>`self.root.mainloop()`
->>
->>finally_event()
->>>`print("再见!")`
