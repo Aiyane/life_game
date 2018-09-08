@@ -53,15 +53,11 @@ class Control(object, metaclass=BaseConrol):
         return self.game.config
 
     def get_cell_position(self, x, y):
-        return (x*self.game.cell_size+self.game.canvas_margin_left,
-                y*self.game.cell_size+self.game.canvas_margin_top,
-                (x+1)*self.game.cell_size+self.game.canvas_margin_left,
-                (y+1)*self.game.cell_size+self.game.canvas_margin_top)
+        return self.game.get_cell_position(x, y)
 
     def get_cells(self):
-        for x in range(self.map_x+1):
-            for y in range(self.map_y+1):
-                yield self.mapping.game_map[x][y]
+        for cell in self.game.get_cells():
+            yield cell
 
     def start(self):
         self.init_window()
