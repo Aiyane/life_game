@@ -88,7 +88,7 @@ class Control(object, metaclass=BaseConrol):
         self.init_window()
         self.init_canvas()
         self.init_mapping()
-        self.next_control_func()
+        self.control_loop()
         self.root.mainloop()
         self.finally_event()
     
@@ -101,7 +101,7 @@ class Control(object, metaclass=BaseConrol):
     def init_mapping(self):
         self.game.init_mapping()
 
-    def next_control_func(self):
+    def control_loop(self):
         self.before_control()
         self.control()
         self.after_control()
@@ -142,7 +142,7 @@ class Control(object, metaclass=BaseConrol):
         self.paint_nums += 1
 
     def after_control(self):
-        self.canvas.after(self.get_sleep_time(), self.next_control_func)
+        self.canvas.after(self.get_sleep_time(), self.control_loop)
 
     def finally_event(self):
         print("再见!")

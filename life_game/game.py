@@ -84,6 +84,7 @@ class Game(object):
     })
 
     def __init__(self):
+        #: 窗口标题
         self.root.title('生命游戏')
         #: 当前配置
         self.config = Config(self.default_config)
