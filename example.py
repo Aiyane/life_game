@@ -10,7 +10,7 @@ class MyControl(Control):
     def sleep(self):
         if self.paint_nums % 5 == 0:
             return 1000
-        return self.game.sleep_time
+        return 100
 
     def before_paint(self):
         # 每隔5代改变一次颜色

@@ -105,7 +105,7 @@ class Control(object, metaclass=BaseConrol):
         self.paint_nums += 1
 
     def sleep(self):
-        return self.mapping.sleep
+        return self.game.sleep_time
 
     def after_control(self):
         self.canvas.after(self.sleep(), self.next_control_func)
