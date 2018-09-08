@@ -108,17 +108,17 @@ class Control(object, metaclass=BaseConrol):
 
     def control_loop(self):
         self.before_control()
-        self.control()
+        if self.update_cells:
+            self.control()
         self.after_control()
 
     def before_control(self):
         self.loop_nums += 1
 
     def control(self):
-        if self.update_cells:
-            self.before_paint()
-            self.paint()
-            self.after_paint()
+        self.before_paint()
+        self.paint()
+        self.after_paint()
 
     def before_paint(self):
         """在每次画图前将以存在的图删去
