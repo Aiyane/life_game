@@ -1,3 +1,4 @@
+import profile
 from life_game import Control
 import settings
 
@@ -17,8 +18,10 @@ class MyControl(Control):
             return "red"
         return "blue"
 
-
-if __name__ == '__main__':
+def main():
     control = MyControl()
     control.config.from_object(settings)
     control.start()
+
+if __name__ == '__main__':
+    profile.run("main()")
