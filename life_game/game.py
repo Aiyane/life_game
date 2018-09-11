@@ -165,7 +165,6 @@ class Game(object):
         self.paint()
         self.cv.after(self.sleep_time, self.loop_paint)
 
-
     def paint(self):
         for cell in self.get_cells():
             if cell.lived and not cell.shape_obj:

@@ -74,7 +74,7 @@ class Cell(object):
             for j in range(y-1, y+2):
                 con1 = i != x or j != y
                 con2 = i >= 0 and j >= 0
-                con3 = i <= mapping.map_x and j <= mapping.map_y 
+                con3 = i <= mapping.map_x and j <= mapping.map_y
 
                 if con1 and con2 and con3:
                     if game_map[i][j].lived:
