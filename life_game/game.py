@@ -5,7 +5,7 @@ from tkinter import Tk, Canvas
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
 from life_game import Mapping
-from life_game.help_func import get_cell_color, get_cell_position, get_sleep_time
+from life_game.help_func import get_cell_color, get_cell_position, get_sleep_time, get_cells
 
 
 class Game(object):
@@ -130,16 +130,6 @@ class Game(object):
         self.canvas = Canvas(root, width=width, height=height, bg=background)
         self.canvas.pack()
 
-    def get_cell_position(self, x_coordin, y_coordin):
-        """获取细胞坐标"""
-        return get_cell_position(self, x_coordin, y_coordin)
-
-    def get_cells(self):
-        """获取所有细胞"""
-        for x_coordin in range(self.mapping.map_x+1):
-            for y_coordin in range(self.mapping.map_y+1):
-                yield self.mapping.game_map[x_coordin][y_coordin]
-
     def add_border(self):
         """增加边框"""
         left_x = self.canvas_margin_left
@@ -159,9 +149,9 @@ class Game(object):
 
         # 初始化地图
         color = get_cell_color(self, self.cell_color)
-        for cell in self.get_cells():
+        for cell in get_cells(self):
             if cell.lived:
-                coordins = self.get_cell_position(cell.x, cell.y)
+                coordins = get_cell_position(self, cell.x, cell.y)
                 cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
     def loop_paint(self):
@@ -175,9 +165,9 @@ class Game(object):
     def paint(self):
         """绘制细胞"""
         color = get_cell_color(self, self.cell_color)
-        for cell in self.get_cells():
+        for cell in get_cells(self):
             if cell.lived and not cell.shape_obj:
-                coordins = self.get_cell_position(cell.x, cell.y)
+                coordins = get_cell_position(self, cell.x, cell.y)
                 cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
             elif not cell.lived and cell.shape_obj:

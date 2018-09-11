@@ -24,4 +24,5 @@ def main():
     control.start()
 
 if __name__ == '__main__':
-    profile.run("main()")
+    # profile.run("main()")
+    main()

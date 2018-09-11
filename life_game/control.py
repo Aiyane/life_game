@@ -2,7 +2,7 @@
 与游戏控制有关的类
 """
 from life_game import Game
-from life_game.help_func import get_sleep_time, get_cell_position
+from life_game.help_func import get_sleep_time, get_cell_position, get_cells
 
 
 class NotInitError(Exception):
@@ -78,17 +78,6 @@ class Control(object, metaclass=BaseConrol):
         """游戏配置"""
         return self.game.config
 
-    def get_cell_position(self, x_coordin, y_coordin):
-        """重载获取位置,细胞大小函数
-        使用该对象的方法来得到图像的位置属性,大小属性
-        """
-        return get_cell_position(self, x_coordin, y_coordin)
-
-    def get_cells(self):
-        """获取全部细胞"""
-        for cell in self.game.get_cells():
-            yield cell
-
     def start(self):
         """游戏开始"""
         self.init_window()
@@ -133,7 +122,7 @@ class Control(object, metaclass=BaseConrol):
         """
         self.mapping.generate_next()
 
-        for cell in self.get_cells():
+        for cell in get_cells(self):
             if cell.lived and cell.shape_obj:
                 self.canvas.delete(cell.shape_obj)
                 cell.shape_obj = None

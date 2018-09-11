@@ -49,3 +49,9 @@ def get_cell_position(control_or_game, x_coordin, y_coordin):
         (x_coordin + 1) * size + left,
         (y_coordin + 1) * size + top
     )
+
+def get_cells(game):
+    """获取所有细胞"""
+    for x_coordin in range(game.mapping.map_x+1):
+        for y_coordin in range(game.mapping.map_y+1):
+            yield game.mapping.game_map[x_coordin][y_coordin]
