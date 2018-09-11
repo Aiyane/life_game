@@ -26,6 +26,8 @@ python test.py
 |CELL_SIZE|细胞大小|`10`|
 |CANVAS_MARGIN_TOP|画布距离窗口顶部距离|`50`|
 |CANVAS_MARGIN_LEFT|画布距离窗口左部距离|`135`|
+|CELL_COLOR|细胞颜色|`black`|
+|BACKGROUND|画布背景颜色|`white`|
 
 ## 例子
 ```py

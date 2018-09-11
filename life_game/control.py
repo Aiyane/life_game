@@ -9,7 +9,8 @@ class BaseConrol(type):
     def __new__(cls, name, bases, attrs):
         cls = super(BaseConrol, cls).__new__(cls, name, bases, attrs)
         if name == 'Control':
-            setattr(cls, 'game', Game())
+            cls._init_game(cls)
+            delattr(cls, '_init_game')
         else:
             for attr in dir(cls):
                 if attr.upper() in cls.game.config:
@@ -26,6 +27,13 @@ class Control(object, metaclass=BaseConrol):
         self.update_cells = True
         self.paint_nums = 0
         self.loop_nums = 0
+    
+    def _init_game(self):
+        """初始化游戏，该方法不应该直接调用，只有在元类中会调用，调用后会删除该方法。
+        该方法存在的目的是为了方便静态类型的检查，直接在元类中使用 `setattr` 方法当然可以。
+        不过我们应该避免使用 `setattr` 这类对代码审查工具不友好的 '魔法方法'
+        """
+        self.game = Game()
 
     @property
     def mapping(self):
