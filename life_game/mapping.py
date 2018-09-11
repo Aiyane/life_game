@@ -82,5 +82,7 @@ class Cell(object):
 
         if count == 2:
             self.next = self.lived
+        elif count == 3:
+            self.next = True
         else:
-            self.next = True if count == 3 else False
+            self.next = False
