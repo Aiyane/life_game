@@ -5,7 +5,6 @@ from tkinter import Tk, Canvas
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
 from life_game import Mapping
-from life_game.help_func import get_cell_color, get_cell_position, get_sleep_time, get_cells
 
 
 class Game(object):
@@ -148,28 +147,66 @@ class Game(object):
         self.add_border()
 
         # 初始化地图
-        color = get_cell_color(self, self.cell_color)
-        for cell in get_cells(self):
+        color = self.get_cell_color()
+        for cell in self.get_cells():
             if cell.lived:
-                coordins = get_cell_position(self, cell.x, cell.y)
+                coordins = self.get_cell_position(cell.x, cell.y)
                 cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
     def loop_paint(self):
         """循环绘制细胞"""
         self.mapping.generate_next()
-        self.paint(self)
-        sleep_time = get_sleep_time(self, self.sleep_time)
+        self.paint()
+        sleep_time = self.get_sleep_time()
         self.canvas.after(sleep_time, self.loop_paint)
 
-    @staticmethod
     def paint(self):
         """绘制细胞"""
-        color = get_cell_color(self, self.cell_color)
-        for cell in get_cells(self):
+        color = self.get_cell_color()
+        for cell in self.get_cells():
             if cell.lived and not cell.shape_obj:
-                coordins = get_cell_position(self, cell.x, cell.y)
+                coordins = self.get_cell_position(cell.x, cell.y)
                 cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
             elif not cell.lived and cell.shape_obj:
                 self.canvas.delete(cell.shape_obj)
                 cell.shape_obj = None
+
+    def get_sleep_time(self):
+        """获取定时器"""
+        return self.sleep_time
+
+    def get_cell_color(self):
+        """获取细胞颜色"""
+        return self.cell_color
+
+    def get_cell_size(self):
+        """获取细胞大小"""
+        return self.cell_size
+
+    def get_canvas_margin_left(self):
+        """获取画布左边距"""
+        return self.canvas_margin_left
+
+    def get_canvas_margin_top(self):
+        """获取画布上边距"""
+        return self.canvas_margin_top
+
+    def get_cell_position(self, x_coordin, y_coordin):
+        """获取细胞坐标"""
+        size = self.get_cell_size()
+        left = self.get_canvas_margin_left()
+        top = self.get_canvas_margin_top()
+
+        return (
+            x_coordin * size + left,
+            y_coordin * size + top,
+            (x_coordin + 1) * size + left,
+            (y_coordin + 1) * size + top
+        )
+
+    def get_cells(self):
+        """获取所有细胞"""
+        for x_coordin in range(self.mapping.map_x+1):
+            for y_coordin in range(self.mapping.map_y+1):
+                yield self.mapping.game_map[x_coordin][y_coordin]

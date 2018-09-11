@@ -4,9 +4,11 @@ import settings
 
 
 class MyControl(Control):
-    # 初始化配置
-    cell_color = "red"
-    sleep_time = 100
+    def __init__(self):
+        # 初始化配置
+        super(MyControl, self).__init__()
+        self.cell_color = "red"
+        self.sleep_time = 100
 
     def get_sleep_time(self):
         if self.paint_nums % 5 == 0:
