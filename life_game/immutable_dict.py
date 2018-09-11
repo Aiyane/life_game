@@ -1,4 +1,7 @@
+"""不可改变字典相关
+"""
 def is_immutable(self):
+    """不可改变的错误"""
     raise TypeError('%r 对象是不可改变的' % self.__class__.__name__)
 
 

@@ -1,10 +1,13 @@
+"""
+与配置相关的类
+"""
 class ConfigAttribute(object):
     """Makes an attribute forward to the config"""
 
     def __init__(self, name):
         self.__name__ = name
 
-    def __get__(self, obj, type=None):
+    def __get__(self, obj, class_type=None):
         if obj is None:
             return self
         return obj.config[self.__name__]
@@ -14,6 +17,7 @@ class ConfigAttribute(object):
 
 
 class Config(dict):
+    """配置类，为简单的字典，key 只接收大写字符"""
     def __init__(self, defaults=None):
         dict.__init__(self, defaults or {})
 

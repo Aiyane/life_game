@@ -1,21 +1,27 @@
+"""
+与游戏控制有关的类
+"""
 from life_game import Game
+from life_game.help_func import get_sleep_time, get_cell_position
 
 
 class NotInitError(Exception):
+    """未初始化错误"""
     pass
 
 
 class BaseConrol(type):
-    def __new__(cls, name, bases, attrs):
-        cls = super(BaseConrol, cls).__new__(cls, name, bases, attrs)
+    """Control的元类，给Control绑定game参数，给Control类的子类初始化配置参数值"""
+    def __new__(mcs, name, bases, attrs):
+        mcs = super(BaseConrol, mcs).__new__(mcs, name, bases, attrs)
         if name == 'Control':
-            cls._init_game(cls)
-            delattr(cls, '_init_game')
+            mcs._init_game(mcs)
+            delattr(mcs, '_init_game')
         else:
-            for attr in dir(cls):
-                if attr.upper() in cls.game.config:
-                    setattr(cls.game, attr, getattr(cls, attr))
-        return cls
+            for attr in dir(mcs):
+                if attr.upper() in mcs.game.config:
+                    setattr(mcs.game, attr, getattr(mcs, attr))
+        return mcs
 
 
 class Control(object, metaclass=BaseConrol):
@@ -23,11 +29,14 @@ class Control(object, metaclass=BaseConrol):
     以 `get` 开头的方法, 控制整个游戏过程中的各个属性,
     自定义需要的属性, 需要重载这些方法.
     """
+
     def __init__(self):
         self.update_cells = True
         self.paint_nums = 0
         self.loop_nums = 0
-    
+        if not hasattr(self, 'game'):
+            self.game = Game()
+
     def _init_game(self):
         """初始化游戏，该方法不应该直接调用，只有在元类中会调用，调用后会删除该方法。
         该方法存在的目的是为了方便静态类型的检查，直接在元类中使用 `setattr` 方法当然可以。
@@ -37,67 +46,51 @@ class Control(object, metaclass=BaseConrol):
 
     @property
     def mapping(self):
+        """游戏地图"""
         if hasattr(self.game, 'mapping'):
             return self.game.mapping
         raise NotInitError("`game.mapping` 没有初始化, 尝试先调用 `init_mapping` 函数")
 
     @property
     def canvas(self):
-        if hasattr(self.game, 'cv'):
-            return self.game.cv
+        """游戏画布"""
+        if hasattr(self.game, 'canvas'):
+            return self.game.canvas
         raise NotInitError("`game.cv` 没有初始化, 尝试先调用 `init_canvas` 函数")
 
     @property
     def map_x(self):
+        """游戏地图行数"""
         return self.mapping.map_x
 
     @property
     def map_y(self):
+        """游戏地图列数"""
         return self.mapping.map_y
 
     @property
     def root(self):
+        """Tk类实例"""
         return self.game.root
 
     @property
     def config(self):
+        """游戏配置"""
         return self.game.config
 
-    def get_sleep_time(self):
-        return self.game.sleep_time
-
-    def get_cell_color(self):
-        return self.game.cell_color
-
-    def get_cell_size(self):
-        return self.game.cell_size
-
-    def get_canvas_margin_left(self):
-        return self.game.canvas_margin_left
-
-    def get_canvas_margin_top(self):
-        return self.game.canvas_margin_top
-
-    def get_cell_position(self, x, y):
+    def get_cell_position(self, x_coordin, y_coordin):
         """重载获取位置,细胞大小函数
         使用该对象的方法来得到图像的位置属性,大小属性
         """
-        size = self.get_cell_size()
-        left = self.get_canvas_margin_left()
-        top = self.get_canvas_margin_top()
-
-        x1 = x * size + left
-        y1 = y * size + top
-        x2 = (x + 1) * size + left
-        y2 = (y + 1) * size + top
-
-        return x1, y1, x2, y2
+        return get_cell_position(self, x_coordin, y_coordin)
 
     def get_cells(self):
+        """获取全部细胞"""
         for cell in self.game.get_cells():
             yield cell
 
     def start(self):
+        """游戏开始"""
         self.init_window()
         self.init_canvas()
         self.init_mapping()
@@ -106,24 +99,30 @@ class Control(object, metaclass=BaseConrol):
         self.finally_event()
 
     def init_window(self):
+        """初始化窗口"""
         self.game.init_window()
 
     def init_canvas(self):
+        """初始化画布"""
         self.game.init_canvas()
 
     def init_mapping(self):
+        """初始化地图"""
         self.game.init_mapping()
 
     def control_loop(self):
+        """循环控制"""
         self.before_control()
         if self.update_cells:
             self.control()
         self.after_control()
 
     def before_control(self):
+        """每次控制前的钩子"""
         self.loop_nums += 1
 
     def control(self):
+        """一次循环控制"""
         self.before_paint()
         self.paint()
         self.after_paint()
@@ -143,25 +142,17 @@ class Control(object, metaclass=BaseConrol):
         """重载画图函数
         使用该对象的方法来得到图像的属性
         """
-        for cell in self.get_cells():
-            lived = cell.lived
-            shaped = cell.shape_obj
-
-            if lived and not shaped:
-                coordins = self.get_cell_position(cell.x, cell.y)
-                color = self.get_cell_color()
-                cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
-
-            elif not lived and shaped:
-                self.canvas.delete(cell.shape_obj)
-                cell.shape_obj = None
+        self.game.paint(self)
 
     def after_paint(self):
+        """每次细胞生成后的钩子"""
         self.paint_nums += 1
 
     def after_control(self):
-        sleep_time = self.get_sleep_time()
+        """每次控制后的钩子"""
+        sleep_time = get_sleep_time(self, self.game.sleep_time)
         self.canvas.after(sleep_time, self.control_loop)
 
     def finally_event(self):
-        print("再见!")
+        """游戏关闭需要完成的事"""
+        print("经过了" + str(self.paint_nums) + "代，再见!")

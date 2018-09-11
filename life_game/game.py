@@ -1,10 +1,17 @@
+"""
+游戏模块
+"""
 from tkinter import Tk, Canvas
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
 from life_game import Mapping
+from life_game.help_func import get_cell_color, get_cell_position, get_sleep_time
 
 
 class Game(object):
+    """
+    游戏类
+    """
     root = Tk()
 
     #: debug模式, 设置为 `True` 会打印出每一次迭代细胞的具体情况,
@@ -59,7 +66,7 @@ class Game(object):
     #: 画布距离窗口左部距离
     #: 默认为: `135`
     canvas_margin_left = ConfigAttribute('CANVAS_MARGIN_LEFT')
-    
+
     #: 细胞颜色
     #: 默认为: `black`
     cell_color = ConfigAttribute('CELL_COLOR')
@@ -102,7 +109,7 @@ class Game(object):
         self.root.mainloop()
 
     def init_window(self):
-        #: 初始化窗口
+        """初始化窗口"""
         width = str(self.window_width)
         height = str(self.window_height)
         left = str(self.margin_left)
@@ -112,66 +119,67 @@ class Game(object):
         #: 窗口大小是否可以改变
         is_change = self.window_change
         self.root.resizable(width=is_change, height=is_change)
-    
+
     def init_canvas(self):
-        #: 生命游戏的画布
+        """初始化生命游戏的画布"""
         root = self.root
         width = self.window_width
         height = self.window_height
-        bg = self.background
+        background = self.background
 
-        self.cv = Canvas(root, width=width, height=height, bg=bg)
-        self.cv.pack()
+        self.canvas = Canvas(root, width=width, height=height, bg=background)
+        self.canvas.pack()
 
-    def get_cell_position(self, x, y):
-        size = self.cell_size
-        left = self.canvas_margin_left
-        top = self.canvas_margin_top
-
-        x1 = x * size + left
-        y1 = y * size + top
-        x2 = (x + 1) * size + left
-        y2 = (y + 1) * size + top
-
-        return x1, y1, x2, y2
+    def get_cell_position(self, x_coordin, y_coordin):
+        """获取细胞坐标"""
+        return get_cell_position(self, x_coordin, y_coordin)
 
     def get_cells(self):
-        for x in range(self.mapping.map_x+1):
-            for y in range(self.mapping.map_y+1):
-                yield self.mapping.game_map[x][y]
-    
-    def init_mapping(self):
-        self.mapping = Mapping(self.column_nums, self.row_nums, self.init_cells, self.debug)
-        # 边框
-        x1 = self.canvas_margin_left
-        y1 = self.canvas_margin_top
-        x2 = self.cell_size*(self.mapping.map_x+1)+self.canvas_margin_left
-        y2 = self.cell_size*(self.mapping.map_y+1)+self.canvas_margin_top
+        """获取所有细胞"""
+        for x_coordin in range(self.mapping.map_x+1):
+            for y_coordin in range(self.mapping.map_y+1):
+                yield self.mapping.game_map[x_coordin][y_coordin]
 
-        self.cv.create_line(x1, y1, x2, y1)
-        self.cv.create_line(x1, y1, x1, y2)
-        self.cv.create_line(x2, y1, x2, y2)
-        self.cv.create_line(x1, y2, x2, y2)
+    def add_border(self):
+        """增加边框"""
+        left_x = self.canvas_margin_left
+        top_y = self.canvas_margin_top
+        right_x = self.cell_size*(self.mapping.map_x+1)+self.canvas_margin_left
+        bottom_y = self.cell_size*(self.mapping.map_y+1)+self.canvas_margin_top
+
+        self.canvas.create_line(left_x, top_y, right_x, top_y)
+        self.canvas.create_line(left_x, top_y, left_x, bottom_y)
+        self.canvas.create_line(right_x, top_y, right_x, bottom_y)
+        self.canvas.create_line(left_x, bottom_y, right_x, bottom_y)
+
+    def init_mapping(self):
+        """初始化地图"""
+        self.mapping = Mapping(self.column_nums, self.row_nums, self.init_cells, self.debug)
+        self.add_border()
 
         # 初始化地图
+        color = get_cell_color(self, self.cell_color)
         for cell in self.get_cells():
             if cell.lived:
                 coordins = self.get_cell_position(cell.x, cell.y)
-                color = self.cell_color
-                cell.shape_obj = self.cv.create_rectangle(*coordins, fill=color, outline=color)
-    
-    def loop_paint(self):
-        self.mapping.generate_next()
-        self.paint()
-        self.cv.after(self.sleep_time, self.loop_paint)
+                cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
+    def loop_paint(self):
+        """循环绘制细胞"""
+        self.mapping.generate_next()
+        self.paint(self)
+        sleep_time = get_sleep_time(self, self.sleep_time)
+        self.canvas.after(sleep_time, self.loop_paint)
+
+    @staticmethod
     def paint(self):
+        """绘制细胞"""
+        color = get_cell_color(self, self.cell_color)
         for cell in self.get_cells():
             if cell.lived and not cell.shape_obj:
                 coordins = self.get_cell_position(cell.x, cell.y)
-                color = self.cell_color
-                cell.shape_obj = self.cv.create_rectangle(*coordins, fill=color, outline=color)
+                cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
             elif not cell.lived and cell.shape_obj:
-                self.cv.delete(cell.shape_obj)
+                self.canvas.delete(cell.shape_obj)
                 cell.shape_obj = None
