@@ -15,17 +15,7 @@ class Control(Game):
         self.update_cells = True
         self.paint_nums = 0
         self.loop_nums = 0
-    
-    def init_window(self):
-        self.game.init_window()
-    
-    def init_canvas(self):
-        self.game.init_canvas()
-   
-    def init_mapping(self):
-        self.game.init_mapping()
-    
-   
+
     @property
     def map_x(self):
         """游戏地图行数"""

@@ -1,8 +1,9 @@
 import unittest
 
 from life_game import Mapping, Game
-from life_game.mapping import Cell
+from life_game.basic_units import Cell
 from life_game.config import Config, ConfigAttribute
+from life_game import Control
 
 
 class TestCell(unittest.TestCase):
