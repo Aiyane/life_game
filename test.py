@@ -1,6 +1,12 @@
 import unittest
 
+<<<<<<< HEAD
 from life_game import Mapping, Cell, Game, Config, ConfigAttribute,Control
+=======
+from life_game import Mapping, Game
+from life_game.mapping import Cell
+from life_game.config import Config, ConfigAttribute
+>>>>>>> 49482464675e88770795fb93213dbd44fb048eba
 
 
 class TestCell(unittest.TestCase):
@@ -46,7 +52,6 @@ class TestMapping(unittest.TestCase):
         mapping = Mapping(3, 4)
         self.assertEqual(mapping.map_x, 3)
         self.assertEqual(mapping.map_y, 4)
-        self.assertEqual(mapping.sleep, 500)
         self.assertEqual(mapping.debug, False)
         self.assertTrue(isinstance(mapping, Mapping))
 

@@ -1,17 +1,20 @@
-from life_game import Control, Mapping
+import profile
+from life_game import Control
 import settings
 import random
 
 
 class MyControl(Control):
-    def init_mapping(self):
-        # 重载初始化地图, 去除边框
-        self.game.cell_color = "red"
-        self.game.init_mapping()
+    def __init__(self):
+        # 初始化配置
+        super(MyControl, self).__init__()
+        self.cell_color = "red"
+        self.sleep_time = 100
 
-    def sleep(self):
+    def get_sleep_time(self):
         if self.paint_nums % 5 == 0:
             return 1000
+<<<<<<< HEAD
         return self.mapping.sleep
 
     def before_paint(self):
@@ -26,9 +29,20 @@ class MyControl(Control):
                     self.cv.itemconfig(cell.shape_obj, 
                                        fill=self.game.cell_color, 
                                        outline=self.game.cell_color)
+=======
+        return 100
+>>>>>>> 49482464675e88770795fb93213dbd44fb048eba
 
+    def get_cell_color(self):
+        if self.paint_nums % 10 < 5:
+            return "red"
+        return "blue"
 
-if __name__ == '__main__':
+def main():
     control = MyControl()
     control.config.from_object(settings)
     control.start()
+
+if __name__ == '__main__':
+    # profile.run("main()")
+    main()
