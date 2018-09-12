@@ -33,60 +33,11 @@ class Control(Game):
 
     @property
     def map_y(self):
-<<<<<<< HEAD
-        return self.game.mapping.map_y
-
-    @property
-    def root(self):
-        return self.game.root
-
-    @property
-    def config(self):
-        return self.game.config
-
-    @property
-    def cv(self):
-        return self.game.cv
-    
-    def get_cell_color(self):
-        return self.game.cell_color
-    
-    def get_cell_size(self):
-        return self.game.cell_size
-    
-    def get_canvas_margin_left(self):
-        return self.game.canvas_margin_left
-    
-    def get_canvas_margin_top(self):
-        return self.game.canvas_margin_top
-    
-    def sleep(self):
-        return self.mapping.sleep
-
-    def get_cell_position(self, x, y):
-        return (x*self.game.cell_size+self.get_canvas_margin_left(),
-                y*self.game.cell_size+self.get_canvas_margin_top(),
-                (x+1)*self.game.cell_size+self.get_canvas_margin_left(),
-                (y+1)*self.game.cell_size+self.get_canvas_margin_top())
-
-    def get_cells(self):
-        for cell in self.game.get_cells():
-            yield cell
-
-    def pause(self):
-        self.update_cells = False
-
-    def go(self):
-        self.update_cells = True
-    
-    def start(self):
-=======
         """游戏地图列数"""
         return self.mapping.map_y
 
     def start(self):
         """游戏开始"""
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba
         self.init_window()
         self.init_canvas()
         self.init_mapping()
@@ -125,12 +76,7 @@ class Control(Game):
     def after_paint(self):
         """每次细胞生成后的钩子"""
         self.paint_nums += 1
-<<<<<<< HEAD
-    
-    
-=======
 
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba
     def after_control(self):
         """每次控制后的钩子"""
         sleep_time = self.get_sleep_time()

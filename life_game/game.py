@@ -4,11 +4,7 @@
 from tkinter import Tk, Canvas
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
-<<<<<<< HEAD
 from life_game.basic_units import Mapping
-=======
-from life_game import Mapping
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba
 
 
 class Game(object):
@@ -104,38 +100,6 @@ class Game(object):
         self.config = Config(self.default_config)
         self.cell_color = "black"
 
-<<<<<<< HEAD
-    # 初始化GUI窗口
-    def init_window(self):
-        #: 初始化窗口
-        self.root.geometry(''.join([str(self.window_width), 'x',
-                                    str(self.window_height), '+',
-                                    str(self.margin_left), '+',
-                                    str(self.margin_top)]))
-        #: 窗口大小是否可以改变
-        self.root.resizable(width=self.window_change,
-                            height=self.window_change)
-
-    # 初始化GUI画布
-    def init_canvas(self):
-         #: 生命游戏的画布
-        self.cv = Canvas(self.root, width=self.window_width,
-                         height=self.window_height, bg='white')
-        
-        self.cv.pack()
-
-    
-    def get_cell_position(self, x, y):
-        return (x*self.cell_size+self.canvas_margin_left,
-                 y*self.cell_size+self.canvas_margin_top,
-                 (x+1)*self.cell_size+self.canvas_margin_left,
-                 (y+1)*self.cell_size+self.canvas_margin_top)
- 
-    def get_cells(self):
-        for x in range(self.mapping.map_x+1):
-            for y in range(self.mapping.map_y+1):
-                yield self.mapping.game_map[x][y]
-=======
     def start(self):
         """游戏开始"""
         self.init_window()
@@ -177,7 +141,6 @@ class Game(object):
         self.canvas.create_line(left_x, top_y, left_x, bottom_y)
         self.canvas.create_line(right_x, top_y, right_x, bottom_y)
         self.canvas.create_line(left_x, bottom_y, right_x, bottom_y)
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba
 
     def init_mapping(self):
         """初始化地图"""
@@ -185,40 +148,6 @@ class Game(object):
         self.add_border()
 
         # 初始化地图
-<<<<<<< HEAD
-        for cell in self.get_cells():
-                if cell.lived:
-                    cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y),
-                                                              fill=self.cell_color, outline=self.cell_color)
-    
-    def paint(self):
-        for cell in self.get_cells():
-                # 如果细胞是活的并且没有画框
-                if cell.lived and not cell.shape_obj:
-                    cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y),
-                                                                    fill=self.cell_color, outline=self.cell_color)
-                # 如果细胞是死的并且已经画了框                                              
-                elif not cell.lived and cell.shape_obj:
-                    self.cv.delete(cell.shape_obj)
-                    cell.shape_obj = None
-    
-    def loop_paint(self):
-        self.mapping.generate_next()
-        self.paint()
-        self.cv.after(self.mapping.sleep, self.loop_paint)
-
-    
-
-   
-    
-    def start(self):
-        """游戏开始"""
-        self.init_window()
-        self.init_canvas()
-        self.init_mapping()
-        self.loop_paint()
-        self.root.mainloop()
-=======
         color = self.get_cell_color()
         for cell in self.get_cells():
             if cell.lived:
@@ -282,4 +211,3 @@ class Game(object):
         for x_coordin in range(self.mapping.map_x+1):
             for y_coordin in range(self.mapping.map_y+1):
                 yield self.mapping.game_map[x_coordin][y_coordin]
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba

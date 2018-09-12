@@ -14,13 +14,6 @@ class Mapping(object):
         self.init_game_map(x, y)
         self.init_cells(dot_map)
 
-<<<<<<< HEAD:life_game/basic_units.py
-    def init_game_map(self, x, y):
-        """初始化格子全为False"""
-        self.map_x, self.map_y = x, y
-        self.game_map = [[Cell(False, x, y) for y in range(y+1)]
-                         for x in range(x+1)]
-=======
     def print_cells(self):
         """打印细胞状态"""
         for row in self.game_map:
@@ -41,7 +34,6 @@ class Mapping(object):
         self.map_x, self.map_y = x_coordin, y_coordin
         self.game_map = [[Cell(False, x, y) for y in range(y_coordin+1)]
                          for x in range(x_coordin+1)]
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba:life_game/mapping.py
 
     def init_cells(self, dot_map=None):
         """初始化细胞"""
@@ -54,21 +46,6 @@ class Mapping(object):
         if self.debug:
             print("\n初始化生命游戏:")
             self.print_cells()
-
-
-    def print_cells(self):
-        for row in self.game_map:
-            lived = [cell.lived for cell in row]
-            print(lived)
-
-    def random_init_cells(self):
-        cells = []
-        for i in range(random.randint(1, self.map_x*self.map_y)):
-            cell = [random.randint(0, self.map_x),
-                    random.randint(0, self.map_y)]
-            cells.append(cell)
-        return cells
-
     
     def generate_next(self):
         """"生成下一代细胞"""
@@ -89,14 +66,9 @@ class Cell(object):
     """细胞类"""
     def __init__(self, lived, x_coordin, y_coordin):
         self.lived = lived
-<<<<<<< HEAD:life_game/basic_units.py
-        self.x = x
-        self.y = y
-=======
         self.next = False
         self.x = x_coordin
         self.y = y_coordin
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba:life_game/mapping.py
         self.shape_obj = None
         self.next = False
 

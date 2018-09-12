@@ -1,12 +1,8 @@
 import unittest
 
-<<<<<<< HEAD
-from life_game import Mapping, Cell, Game, Config, ConfigAttribute,Control
-=======
 from life_game import Mapping, Game
 from life_game.mapping import Cell
 from life_game.config import Config, ConfigAttribute
->>>>>>> 49482464675e88770795fb93213dbd44fb048eba
 
 
 class TestCell(unittest.TestCase):
