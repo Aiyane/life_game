@@ -46,7 +46,7 @@ class Mapping(object):
         if self.debug:
             print("\n初始化生命游戏:")
             self.print_cells()
-    
+
     def generate_next(self):
         """"生成下一代细胞"""
         for row in self.game_map:
@@ -67,16 +67,16 @@ class Cell(object):
     def __init__(self, lived, x_coordin, y_coordin):
         self.lived = lived
         self.next = False
-        self.x = x_coordin
-        self.y = y_coordin
+        self.x_coordin = x_coordin
+        self.y_coordin = y_coordin
         self.shape_obj = None
         self.next = False
 
-    def look_up(self, mapping):
-        """下一代是否还存活"""
+    def count_lived_num(self, mapping):
+        """计算四周活细胞数目"""
         game_map = mapping.game_map
-        x_coordin = self.x
-        y_coordin = self.y
+        x_coordin = self.x_coordin
+        y_coordin = self.y_coordin
         count = 0
         for i in range(x_coordin-1, x_coordin+2):
             for j in range(y_coordin-1, y_coordin+2):
@@ -87,6 +87,11 @@ class Cell(object):
                 if con1 and con2 and con3:
                     if game_map[i][j].lived:
                         count += 1
+        return count
+
+    def look_up(self, mapping):
+        """下一代是否还存活"""
+        count = self.count_lived_num(mapping)
 
         if count == 2:
             self.next = self.lived

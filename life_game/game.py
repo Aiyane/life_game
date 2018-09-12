@@ -98,7 +98,8 @@ class Game(object):
         self.root.title('生命游戏')
         #: 当前配置
         self.config = Config(self.default_config)
-        self.cell_color = "black"
+        self.canvas = None
+        self.mapping = None
 
     def start(self):
         """游戏开始"""
@@ -123,35 +124,26 @@ class Game(object):
     def init_canvas(self):
         """初始化生命游戏的画布"""
         root = self.root
-        width = self.window_width
-        height = self.window_height
         background = self.background
+        left_x = self.canvas_margin_left
+        top_y = self.canvas_margin_top
+        right_x = self.cell_size*(self.row_nums+1)+self.canvas_margin_left
+        bottom_y = self.cell_size*(self.column_nums+1)+self.canvas_margin_top
+        width = right_x - left_x
+        height = bottom_y - top_y
 
         self.canvas = Canvas(root, width=width, height=height, bg=background)
         self.canvas.pack()
 
-    def add_border(self):
-        """增加边框"""
-        left_x = self.canvas_margin_left
-        top_y = self.canvas_margin_top
-        right_x = self.cell_size*(self.mapping.map_x+1)+self.canvas_margin_left
-        bottom_y = self.cell_size*(self.mapping.map_y+1)+self.canvas_margin_top
-
-        self.canvas.create_line(left_x, top_y, right_x, top_y)
-        self.canvas.create_line(left_x, top_y, left_x, bottom_y)
-        self.canvas.create_line(right_x, top_y, right_x, bottom_y)
-        self.canvas.create_line(left_x, bottom_y, right_x, bottom_y)
-
     def init_mapping(self):
         """初始化地图"""
         self.mapping = Mapping(self.column_nums, self.row_nums, self.init_cells, self.debug)
-        self.add_border()
 
         # 初始化地图
         color = self.get_cell_color()
         for cell in self.get_cells():
             if cell.lived:
-                coordins = self.get_cell_position(cell.x, cell.y)
+                coordins = self.get_cell_position(cell.x_coordin, cell.y_coordin)
                 cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
     def loop_paint(self):
@@ -166,7 +158,7 @@ class Game(object):
         color = self.get_cell_color()
         for cell in self.get_cells():
             if cell.lived and not cell.shape_obj:
-                coordins = self.get_cell_position(cell.x, cell.y)
+                coordins = self.get_cell_position(cell.x_coordin, cell.y_coordin)
                 cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
             elif not cell.lived and cell.shape_obj:
@@ -196,14 +188,12 @@ class Game(object):
     def get_cell_position(self, x_coordin, y_coordin):
         """获取细胞坐标"""
         size = self.get_cell_size()
-        left = self.get_canvas_margin_left()
-        top = self.get_canvas_margin_top()
 
         return (
-            x_coordin * size + left,
-            y_coordin * size + top,
-            (x_coordin + 1) * size + left,
-            (y_coordin + 1) * size + top
+            x_coordin * size,
+            y_coordin * size,
+            (x_coordin + 1) * size,
+            (y_coordin + 1) * size
         )
 
     def get_cells(self):

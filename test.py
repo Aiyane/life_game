@@ -1,4 +1,5 @@
 import unittest
+from HTMLTestRunner import HTMLTestRunner
 
 from life_game import Mapping, Game
 from life_game.basic_units import Cell
@@ -166,6 +167,7 @@ class TestGame(unittest.TestCase):
         game.row_nums=5
         game.init_cells=[[0, 1], [1, 0], [1, 2],
                          [1, 4], [3, 1], [4, 4]]
+        game.init_canvas()
         game.init_mapping()
 
         game_map=game.mapping.game_map
@@ -182,6 +184,7 @@ class TestGame(unittest.TestCase):
         game.row_nums=5
         game.init_cells=[[0, 1], [1, 0], [1, 2],
                          [1, 4], [3, 1], [4, 4]]
+        game.init_canvas()
         game.init_mapping()
         # 以下细胞在初始化的时候是活的，初始化时已经画好
         self.assertIsNotNone(game.mapping.game_map[0][1].shape_obj)
@@ -226,72 +229,57 @@ class TestControl(unittest.TestCase):
     def test_mapping(self):
         control=Control()
         # 初始化是，mapping为空
-        self.assertIsNone(control.mapping)
+        control.init_canvas()
         control.init_mapping()
-        self.assertEqual(control.game.mapping,control.mapping)
+        self.assertEqual(control.mapping,control.mapping)
     
     def test_map_x(self):
         control=Control()
+        control.init_canvas()
         control.init_mapping()
-        self.assertEqual(control.game.mapping.map_x,control.map_x)
+        self.assertEqual(control.mapping.map_x,control.map_x)
     
     def test_map_y(self):
         control=Control()
+        control.init_canvas()
         control.init_mapping()
-        self.assertEqual(control.game.mapping.map_y,control.map_y)
+        self.assertEqual(control.mapping.map_y,control.map_y)
 
     def test_root(self):
         control=Control()
-        self.assertEqual(control.game.root,control.root)
+        self.assertEqual(control.root,control.root)
     
     def test_config(self):
         control=Control()
-        self.assertEqual(control.game.config,control.config)
+        self.assertEqual(control.config,control.config)
     
     def test_cv(self):
         control=Control()
-        self.assertEqual(control.game.cv,control.cv)
+        control.init_canvas()
+        self.assertEqual(control.canvas, control.canvas)
 
     def test_get_cell_position(self):
         control=Control()
         # 一个简单的测试用例
-        control.game.init_cells=[[0, 1], [1, 0]]
-        control.game.init_mapping()
+        control.init_cells=[[0, 1], [1, 0]]
+        control.init_canvas()
+        control.init_mapping()
 
-        traget_tuple_1= (0*control.game.cell_size+control.game.canvas_margin_left,
-                        1*control.game.cell_size+control.game.canvas_margin_top,
-                        (0+1)*control.game.cell_size+control.game.canvas_margin_left,
-                        (1+1)*control.game.cell_size+control.game.canvas_margin_top)
+        traget_tuple_1= (0*control.cell_size+control.canvas_margin_left,
+                        1*control.cell_size+control.canvas_margin_top,
+                        (0+1)*control.cell_size+control.canvas_margin_left,
+                        (1+1)*control.cell_size+control.canvas_margin_top)
 
         for index,value in enumerate(control.get_cell_position(0,1)):
                self.assertEqual(traget_tuple_1[index],value)
 
-        traget_tuple_2= (1*control.game.cell_size+control.game.canvas_margin_left,
-                        0*control.game.cell_size+control.game.canvas_margin_top,
-                        (1+1)*control.game.cell_size+control.game.canvas_margin_left,
-                        (0+1)*control.game.cell_size+control.game.canvas_margin_top)
+        traget_tuple_2= (1*control.cell_size+control.canvas_margin_left,
+                        0*control.cell_size+control.canvas_margin_top,
+                        (1+1)*control.cell_size+control.canvas_margin_left,
+                        (0+1)*control.cell_size+control.canvas_margin_top)
         
         for index,value in enumerate(control.get_cell_position(1,0)):
                self.assertEqual(traget_tuple_2[index],value)
-    
-    # """生成器测试函数"""
-    # def test_get_cells(self):
-    #     control=Control()
-    #     control.init_mapping()
-    #     for x in range(control.map_x+1):
-    #         for y in range(control.map_y+1):
-    #             self.assertEqual(control.get_cells[x][y],control.mapping.game_map[x][y])
-
-    def test_pasue(self):
-        control=Control()
-        control.pause()
-        self.assertFalse(control.update_cells)
-    
-    def test_go(self):
-        control=Control()
-        control.pause()
-        control.go()
-        self.assertTrue(control.update_cells)
     
     def test_before_control(self):
         control=Control()
@@ -311,15 +299,6 @@ class TestControl(unittest.TestCase):
         paint_nums_next=control.paint_nums
         self.assertEqual(paint_nums_pre+1,paint_nums_next)
 
-    def test_sleep(self):
-        control=Control()
-        control.init_mapping()
-        self.assertEqual(control.game.mapping.sleep,control.sleep())
-
-    """
-        定时器，暂未实现单元测试
-
-    """
     def test_start(self):
         pass
 
@@ -328,4 +307,19 @@ class TestControl(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # unittest.main()
+    suite = unittest.TestSuite()
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestMapping))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestCell))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestConfig))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestConfigAttribute))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestGame))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestControl))
+
+    with open('HTMLReport.html', 'wb+') as f:
+        runner = HTMLTestRunner(stream=f,
+                                title='生命游戏测试报告',
+                                description='生命游戏.',
+                                verbosity=2
+                                )
+        runner.run(suite)

@@ -12,15 +12,6 @@ class ImmutableDict(dict):
     def __reduce_ex__(self, protocol):
         return type(self), (dict(self),)
 
-    def setdefault(self, key, default=None):
-        is_immutable(self)
-
-    def update(self, *args, **kwargs):
-        is_immutable(self)
-
-    def pop(self, key, default=None):
-        is_immutable(self)
-
     def popitem(self):
         is_immutable(self)
 
