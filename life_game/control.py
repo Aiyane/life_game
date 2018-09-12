@@ -8,7 +8,17 @@ class Control(object):
         self.update_cells = True
         self.paint_nums = 0
         self.loop_nums = 0
-
+    
+    def init_window(self):
+        self.game.init_window()
+    
+    def init_canvas(self):
+        self.game.init_canvas()
+   
+    def init_mapping(self):
+        self.game.init_mapping()
+    
+   
     @property
     def mapping(self):
         if hasattr(self.game, 'mapping'):
@@ -34,32 +44,45 @@ class Control(object):
     @property
     def cv(self):
         return self.game.cv
+    
+    def get_cell_color(self):
+        return self.game.cell_color
+    
+    def get_cell_size(self):
+        return self.game.cell_size
+    
+    def get_canvas_margin_left(self):
+        return self.game.canvas_margin_left
+    
+    def get_canvas_margin_top(self):
+        return self.game.canvas_margin_top
+    
+    def sleep(self):
+        return self.mapping.sleep
 
     def get_cell_position(self, x, y):
-        return (x*self.game.cell_size+self.game.canvas_margin_left,
-                y*self.game.cell_size+self.game.canvas_margin_top,
-                (x+1)*self.game.cell_size+self.game.canvas_margin_left,
-                (y+1)*self.game.cell_size+self.game.canvas_margin_top)
+        return (x*self.game.cell_size+self.get_canvas_margin_left(),
+                y*self.game.cell_size+self.get_canvas_margin_top(),
+                (x+1)*self.game.cell_size+self.get_canvas_margin_left(),
+                (y+1)*self.game.cell_size+self.get_canvas_margin_top())
 
     def get_cells(self):
-        for x in range(self.map_x+1):
-            for y in range(self.map_y+1):
-                yield self.mapping.game_map[x][y]
+        for cell in self.game.get_cells():
+            yield cell
 
     def pause(self):
         self.update_cells = False
 
     def go(self):
         self.update_cells = True
-
+    
     def start(self):
+        self.init_window()
+        self.init_canvas()
         self.init_mapping()
         self.next_control_func()
         self.root.mainloop()
         self.finally_event()
-    
-    def init_mapping(self):
-        self.game.init_mapping()
 
     def next_control_func(self):
         self.before_control()
@@ -84,8 +107,6 @@ class Control(object):
     def after_paint(self):
         self.paint_nums += 1
     
-    def sleep(self):
-        return self.mapping.sleep
     
     def after_control(self):
         self.cv.after(self.sleep(), self.next_control_func)

@@ -4,8 +4,8 @@ import random
 class Mapping(object):
     def __init__(self, x, y, sleep=500, dot_map=None, debug=False):
         """"初始化
-        param x: 地图宽
-        param y: 地图高
+        param x: 宽格子数
+        param y: 高格子数
         param dot_map: 初始化活得细胞 list
         """
         self.sleep = sleep
@@ -13,21 +13,8 @@ class Mapping(object):
         self.init_game_map(x, y)
         self.init_cells(dot_map)
 
-    def print_cells(self):
-        for row in self.game_map:
-            lived = [cell.lived for cell in row]
-            print(lived)
-
-    def random_init_cells(self):
-        cells = []
-        for i in range(random.randint(1, self.map_x*self.map_y)):
-            cell = [random.randint(0, self.map_x),
-                    random.randint(0, self.map_y)]
-            cells.append(cell)
-        return cells
-
     def init_game_map(self, x, y):
-        """初始化地图"""
+        """初始化格子全为False"""
         self.map_x, self.map_y = x, y
         self.game_map = [[Cell(False, x, y) for y in range(y+1)]
                          for x in range(x+1)]
@@ -44,6 +31,21 @@ class Mapping(object):
             print("\n初始化生命游戏:")
             self.print_cells()
 
+
+    def print_cells(self):
+        for row in self.game_map:
+            lived = [cell.lived for cell in row]
+            print(lived)
+
+    def random_init_cells(self):
+        cells = []
+        for i in range(random.randint(1, self.map_x*self.map_y)):
+            cell = [random.randint(0, self.map_x),
+                    random.randint(0, self.map_y)]
+            cells.append(cell)
+        return cells
+
+    
     def generate_next(self):
         for row in self.game_map:
             for cell in row:
@@ -61,10 +63,10 @@ class Mapping(object):
 class Cell(object):
     def __init__(self, lived, x, y):
         self.lived = lived
-        self.next = False
         self.x = x
         self.y = y
         self.shape_obj = None
+        self.next = False
 
     def look_up(self, mapping):
         game_map = mapping.game_map

@@ -2,7 +2,7 @@ import os
 from tkinter import *
 from life_game.immutable_dict import ImmutableDict
 from life_game.config import Config, ConfigAttribute
-from life_game.mapping import Mapping
+from life_game.basic_units import Mapping
 
 
 class Game(object):
@@ -78,47 +78,43 @@ class Game(object):
         'CANVAS_MARGIN_LEFT':                   135,
     })
 
-    def paint(self):
-        for x in range(self.mapping.map_x+1):
-            for y in range(self.mapping.map_y+1):
-                cell = self.mapping.game_map[x][y]
-                if cell.lived and not cell.shape_obj:
-                    cell.shape_obj = self.cv.create_rectangle(x*self.cell_size+self.canvas_margin_left,
-                                                              y*self.cell_size+self.canvas_margin_top,
-                                                              (x+1)*self.cell_size+self.canvas_margin_left,
-                                                              (y+1)*self.cell_size+self.canvas_margin_top,
-                                                              fill=self.cell_color, outline=self.cell_color)
-                elif not cell.lived and cell.shape_obj:
-                    self.cv.delete(cell.shape_obj)
-                    cell.shape_obj = None
-    
-    def loop_paint(self):
-        self.mapping.generate_next()
-        self.paint()
-        self.cv.after(self.mapping.sleep, self.loop_paint)
-
     def __init__(self):
         self.root.title('生命游戏')
 
         #: 当前配置
         self.config = Config(self.default_config)
+        self.cell_color = "black"
 
+    # 初始化GUI窗口
+    def init_window(self):
         #: 初始化窗口
         self.root.geometry(''.join([str(self.window_width), 'x',
                                     str(self.window_height), '+',
                                     str(self.margin_left), '+',
                                     str(self.margin_top)]))
-
         #: 窗口大小是否可以改变
         self.root.resizable(width=self.window_change,
                             height=self.window_change)
 
-        #: 生命游戏的画布
+    # 初始化GUI画布
+    def init_canvas(self):
+         #: 生命游戏的画布
         self.cv = Canvas(self.root, width=self.window_width,
                          height=self.window_height, bg='white')
         
         self.cv.pack()
-        self.cell_color = "black"
+
+    
+    def get_cell_position(self, x, y):
+        return (x*self.cell_size+self.canvas_margin_left,
+                 y*self.cell_size+self.canvas_margin_top,
+                 (x+1)*self.cell_size+self.canvas_margin_left,
+                 (y+1)*self.cell_size+self.canvas_margin_top)
+ 
+    def get_cells(self):
+        for x in range(self.mapping.map_x+1):
+            for y in range(self.mapping.map_y+1):
+                yield self.mapping.game_map[x][y]
 
     def init_mapping(self):
         self.mapping = Mapping(self.column_nums, self.row_nums,
@@ -135,18 +131,35 @@ class Game(object):
         self.cv.create_line(dot_x1, dot_y2, dot_x2, dot_y2)
 
         # 初始化地图
-        for x in range(self.mapping.map_x+1):
-            for y in range(self.mapping.map_y+1):
-                cell = self.mapping.game_map[x][y]
+        for cell in self.get_cells():
                 if cell.lived:
-                    cell.shape_obj = self.cv.create_rectangle(x*self.cell_size+dot_x1,
-                                                              y*self.cell_size+dot_y1,
-                                                              (x+1)*self.cell_size+dot_x1,
-                                                              (y+1)*self.cell_size+dot_y1,
+                    cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y),
                                                               fill=self.cell_color, outline=self.cell_color)
+    
+    def paint(self):
+        for cell in self.get_cells():
+                # 如果细胞是活的并且没有画框
+                if cell.lived and not cell.shape_obj:
+                    cell.shape_obj = self.cv.create_rectangle(*self.get_cell_position(cell.x, cell.y),
+                                                                    fill=self.cell_color, outline=self.cell_color)
+                # 如果细胞是死的并且已经画了框                                              
+                elif not cell.lived and cell.shape_obj:
+                    self.cv.delete(cell.shape_obj)
+                    cell.shape_obj = None
+    
+    def loop_paint(self):
+        self.mapping.generate_next()
+        self.paint()
+        self.cv.after(self.mapping.sleep, self.loop_paint)
+
+    
+
+   
     
     def start(self):
         """游戏开始"""
+        self.init_window()
+        self.init_canvas()
         self.init_mapping()
         self.loop_paint()
         self.root.mainloop()

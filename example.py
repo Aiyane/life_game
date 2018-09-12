@@ -1,5 +1,6 @@
 from life_game import Control, Mapping
 import settings
+import random
 
 
 class MyControl(Control):
@@ -14,10 +15,12 @@ class MyControl(Control):
         return self.mapping.sleep
 
     def before_paint(self):
+        color_list=["red","orange","yellow","green","blue","indigo","purple"]
         # 每隔5代改变一次颜色
         self.mapping.generate_next()
         if self.paint_nums % 5 == 0:
-            self.game.cell_color = "blue" if self.game.cell_color == "red" else "red"
+            self.game.cell_color=color_list[random.randint(0,6)]
+            # self.game.cell_color = "blue" if self.game.cell_color == "red" else "red"
             for cell in self.get_cells():
                 if cell.lived and cell.shape_obj:
                     self.cv.itemconfig(cell.shape_obj, 
