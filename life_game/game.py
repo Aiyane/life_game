@@ -1,5 +1,5 @@
 """
-游戏模块
+game module
 """
 from tkinter import Tk, Canvas
 from life_game.immutable_dict import ImmutableDict
@@ -9,72 +9,72 @@ from life_game.basic_units import Mapping
 
 class Game(object):
     """
-    游戏类
+    Game class
     """
     root = Tk()
 
-    #: debug模式, 设置为 `True` 会打印出每一次迭代细胞的具体情况,
-    #: 默认为 `False`
+    #: debug mode, setted `True` will print every generation cells.
+    #: default is `False`
     debug = ConfigAttribute('DEBUG')
 
-    #: 窗口宽度
-    #: 默认为 `800`
+    #: the width of window
+    #: default is `800`
     window_width = ConfigAttribute('WINDOW_WIDTH')
 
-    #: 窗口高度
-    #: 默认为 `600`
+    #: the height of window
+    #: default is `600`
     window_height = ConfigAttribute('WINDOW_HEIGHT')
 
-    #: 生命游戏地图一行的格子数
-    #: 默认为 `50`
+    #: map row's number of grids
+    #: default is
     row_nums = ConfigAttribute('ROW_NUMS')
 
-    #: 生命游戏地图一列的格子数
-    #: 默认为 `50`
+    #: map column's number of grids
+    #: default is `50`
     column_nums = ConfigAttribute('COLUMN_NUMS')
 
-    #: 窗口里屏幕顶部的距离
-    #: 默认为 `200`
+    #: the distance of the window from the top of the screen
+    #: default is `200`
     margin_top = ConfigAttribute('MARGIN_TOP')
 
-    #: 窗口里屏幕左部的距离
-    #: 默认为 `500`
+    #: the distance of the window from the left of the screen
+    #: default is `500`
     margin_left = ConfigAttribute('MARGIN_LEFT')
 
-    #: 生命游戏更新一代细胞的时间间隔, 单位: 毫秒
-    #: 默认为 `500`
+    #: time interval for each update, Unit miliseconds
+    #: default is `500`
     sleep_time = ConfigAttribute('SLEEP_TIME')
 
-    #: 窗口大小是否可以改变, 为 `True` 时可以改变
-    #: 默认为 `False`
+    #: if changed of the size of the window. it is changeabled when it is `True`.
+    #: default is `False`
     window_change = ConfigAttribute('WINDOW_CHANGE')
 
-    #: 初始化活细胞的坐标, 应该为一个 list 对象
-    #: 例如: `[[0,0], [1,2]]`
-    #: 默认为 `None`
+    #: the coordinates of living cells in initialization, should be a `list` object.
+    #: example: `[[0,0], [1,2]]`
+    #: default is `None`
     init_cells = ConfigAttribute('INIT_CELLS')
 
-    #: 生命游戏细胞大小, int 类型
-    #: 默认为: `10`
+    #: size of cell in game, type of int
+    #: default is `10`
     cell_size = ConfigAttribute('CELL_SIZE')
 
-    #: 画布距离窗口顶部距离
-    #: 默认为: `50`
+    #: the distance of the canvas from the top of the window
+    #: default is `50`
     canvas_margin_top = ConfigAttribute('CANVAS_MARGIN_TOP')
 
-    #: 画布距离窗口左部距离
-    #: 默认为: `135`
+    #: the distance of the canvas from the left of the window
+    #: default is `135`
     canvas_margin_left = ConfigAttribute('CANVAS_MARGIN_LEFT')
 
-    #: 细胞颜色
-    #: 默认为: `black`
+    #: color of cell
+    #: default is `black`
     cell_color = ConfigAttribute('CELL_COLOR')
 
-    #: 画布背景
-    #: 默认为: `white`
+    #: background of canvas
+    #: default is `white`
     background = ConfigAttribute('BACKGROUND')
 
-    #: 默认配置参数
+    #: default attributes
     default_config = ImmutableDict({
         'DEBUG':                                False,
         'ROW_NUMS':                             50,
@@ -94,15 +94,15 @@ class Game(object):
     })
 
     def __init__(self):
-        #: 窗口标题
-        self.root.title('生命游戏')
-        #: 当前配置
+        #: title of window
+        self.root.title('life game')
+        #: current configuration
         self.config = Config(self.default_config)
         self.canvas = None
         self.mapping = None
 
     def start(self):
-        """游戏开始"""
+        """begin of game"""
         self.init_window()
         self.init_canvas()
         self.init_mapping()
@@ -110,19 +110,19 @@ class Game(object):
         self.root.mainloop()
 
     def init_window(self):
-        """初始化窗口"""
+        """initializate window"""
         width = str(self.window_width)
         height = str(self.window_height)
         left = str(self.margin_left)
         top = str(self.margin_top)
 
         self.root.geometry(''.join([width, 'x', height, '+', left, '+', top]))
-        #: 窗口大小是否可以改变
+        #: if is changeabled the size of window
         is_change = self.window_change
         self.root.resizable(width=is_change, height=is_change)
 
     def init_canvas(self):
-        """初始化生命游戏的画布"""
+        """initializate canvas"""
         root = self.root
         background = self.background
         left_x = self.canvas_margin_left
@@ -136,10 +136,9 @@ class Game(object):
         self.canvas.pack()
 
     def init_mapping(self):
-        """初始化地图"""
+        """initializate map"""
         self.mapping = Mapping(self.column_nums, self.row_nums, self.init_cells, self.debug)
 
-        # 初始化地图
         color = self.get_cell_color()
         for cell in self.get_cells():
             if cell.lived:
@@ -147,14 +146,14 @@ class Game(object):
                 cell.shape_obj = self.canvas.create_rectangle(*coordins, fill=color, outline=color)
 
     def loop_paint(self):
-        """循环绘制细胞"""
+        """cycle drawing cells"""
         self.mapping.generate_next()
         self.paint()
         sleep_time = self.get_sleep_time()
         self.canvas.after(sleep_time, self.loop_paint)
 
     def paint(self):
-        """绘制细胞"""
+        """draw cells"""
         color = self.get_cell_color()
         for cell in self.get_cells():
             if cell.lived and not cell.shape_obj:
@@ -166,27 +165,27 @@ class Game(object):
                 cell.shape_obj = None
 
     def get_sleep_time(self):
-        """获取定时器"""
+        """get timer"""
         return self.sleep_time
 
     def get_cell_color(self):
-        """获取细胞颜色"""
+        """get color of cell"""
         return self.cell_color
 
     def get_cell_size(self):
-        """获取细胞大小"""
+        """get size of cell"""
         return self.cell_size
 
     def get_canvas_margin_left(self):
-        """获取画布左边距"""
+        """get the distance of the canvas from the left of window"""
         return self.canvas_margin_left
 
     def get_canvas_margin_top(self):
-        """获取画布上边距"""
+        """get the distance of the canvas from the top of window"""
         return self.canvas_margin_top
 
     def get_cell_position(self, x_coordin, y_coordin):
-        """获取细胞坐标"""
+        """get coordinates of the init cells."""
         size = self.get_cell_size()
 
         return (
@@ -197,7 +196,7 @@ class Game(object):
         )
 
     def get_cells(self):
-        """获取所有细胞"""
+        """get all cells"""
         for x_coordin in range(self.mapping.map_x+1):
             for y_coordin in range(self.mapping.map_y+1):
                 yield self.mapping.game_map[x_coordin][y_coordin]

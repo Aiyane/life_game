@@ -173,7 +173,7 @@ class TestGame(unittest.TestCase):
         game_map=game.mapping.game_map
         for row in game_map:
             for cell in row:
-                # 活的细胞的shape_obj属性必然不为None
+                # lived cells' shape_obj are not None
                 if cell.lived:
                     self.assertIsNotNone(cell.shape_obj)
 
@@ -186,31 +186,31 @@ class TestGame(unittest.TestCase):
                          [1, 4], [3, 1], [4, 4]]
         game.init_canvas()
         game.init_mapping()
-        # 以下细胞在初始化的时候是活的，初始化时已经画好
+        # these cells are lived in init stage.
         self.assertIsNotNone(game.mapping.game_map[0][1].shape_obj)
         self.assertIsNotNone(game.mapping.game_map[1][0].shape_obj)
         self.assertIsNotNone(game.mapping.game_map[1][2].shape_obj)
         self.assertIsNotNone(game.mapping.game_map[1][4].shape_obj)
         self.assertIsNotNone(game.mapping.game_map[3][1].shape_obj)
         self.assertIsNotNone(game.mapping.game_map[4][4].shape_obj)
-        # 产生下一代
+        # generate the next generation
         game.mapping.generate_next()
-        # 重绘
+        # repaint
         game.paint()
-        # 以下细胞在初始化的时候是活的，下一代死去
+        # The following cells in initialization is alive and dies in the the next generation.
         self.assertIsNone(game.mapping.game_map[1][0].shape_obj)
         self.assertIsNone(game.mapping.game_map[1][2].shape_obj)
         self.assertIsNone(game.mapping.game_map[1][4].shape_obj)
         self.assertIsNone(game.mapping.game_map[3][1].shape_obj)
         self.assertIsNone(game.mapping.game_map[4][4].shape_obj)
-        # 以下细胞在初始化的时候是活的，下一代仍然活着
+        # The following cells in initialization is alive and will remain alive in the next generation.
         self.assertIsNotNone(game.mapping.game_map[0][1].shape_obj)
-        # 以下细胞在初始化的时候是死的，下一代复活
+        # The following cells in initialization is dead, resurrected in the next generation.
         self.assertIsNotNone(game.mapping.game_map[1][1].shape_obj)
         self.assertIsNotNone(game.mapping.game_map[2][1].shape_obj)
     
     """
-        定时器，暂未实现单元测试
+        Timer,Unit test not yet implemented.
     """
     def test_loop_paint(self):
         pass
@@ -228,7 +228,7 @@ class TestControl(unittest.TestCase):
     
     def test_mapping(self):
         control=Control()
-        # 初始化是，mapping为空
+        # init mapping is None
         control.init_canvas()
         control.init_mapping()
         self.assertEqual(control.mapping,control.mapping)
@@ -260,7 +260,7 @@ class TestControl(unittest.TestCase):
 
     def test_get_cell_position(self):
         control=Control()
-        # 一个简单的测试用例
+        # a simple test example
         control.init_cells=[[0, 1], [1, 0]]
         control.init_canvas()
         control.init_mapping()
@@ -283,19 +283,19 @@ class TestControl(unittest.TestCase):
     
     def test_before_control(self):
         control=Control()
-        # 之前的loop_nums
+        # before loop_nums
         loop_nums_pre=control.loop_nums
         control.before_control()
-        # 之后的loop_nums
+        # after loop_nums
         loop_nums_next=control.loop_nums
         self.assertEqual(loop_nums_pre+1,loop_nums_next)
     
     def test_after_paint(self):
         control=Control()
-        # 之前的paint_nums
+        # before paint_nums
         paint_nums_pre=control.paint_nums
         control.after_paint()
-        # 之后的paint_nums
+        # after paint_nums
         paint_nums_next=control.paint_nums
         self.assertEqual(paint_nums_pre+1,paint_nums_next)
 
@@ -318,8 +318,8 @@ if __name__ == '__main__':
 
     with open('HTMLReport.html', 'wb+') as f:
         runner = HTMLTestRunner(stream=f,
-                                title='生命游戏测试报告',
-                                description='生命游戏.',
+                                title='Life game test report',
+                                description='life game.',
                                 verbosity=2
                                 )
         runner.run(suite)

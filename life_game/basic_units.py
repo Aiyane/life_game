@@ -1,27 +1,24 @@
-"""游戏地图相关模块"""
+"""module of game map"""
 import random
 
 
 class Mapping(object):
-    """游戏地图"""
+    """game map"""
     def __init__(self, x, y, dot_map=None, debug=False):
-        """"初始化
-        param x: 宽格子数
-        param y: 高格子数
-        param dot_map: 初始化活得细胞 list
+        """init
         """
         self.debug = debug
         self.init_game_map(x, y)
         self.init_cells(dot_map)
 
     def print_cells(self):
-        """打印细胞状态"""
+        """print cell status"""
         for row in self.game_map:
             lived = [cell.lived for cell in row]
             print(lived)
 
     def random_init_cells(self):
-        """"随机初始化细胞"""
+        """"random init cells"""
         cells = []
         for __ in range(random.randint(1, self.map_x*self.map_y)):
             x_coordin = random.randint(0, self.map_x)
@@ -30,13 +27,13 @@ class Mapping(object):
         return cells
 
     def init_game_map(self, x_coordin, y_coordin):
-        """初始化地图"""
+        """init game map"""
         self.map_x, self.map_y = x_coordin, y_coordin
         self.game_map = [[Cell(False, x, y) for y in range(y_coordin+1)]
                          for x in range(x_coordin+1)]
 
     def init_cells(self, dot_map=None):
-        """初始化细胞"""
+        """init cells"""
         if not dot_map:
             dot_map = self.random_init_cells()
 
@@ -44,11 +41,11 @@ class Mapping(object):
             self.game_map[x_coordin][y_coordin].lived = True
 
         if self.debug:
-            print("\n初始化生命游戏:")
+            print("\ninit the life game:")
             self.print_cells()
 
     def generate_next(self):
-        """"生成下一代细胞"""
+        """"generate next genertion"""
         for row in self.game_map:
             for cell in row:
                 cell.look_up(self)
@@ -63,17 +60,16 @@ class Mapping(object):
 
 
 class Cell(object):
-    """细胞类"""
+    """Cell class"""
     def __init__(self, lived, x_coordin, y_coordin):
         self.lived = lived
         self.next = False
         self.x_coordin = x_coordin
         self.y_coordin = y_coordin
         self.shape_obj = None
-        self.next = False
 
     def count_lived_num(self, mapping):
-        """计算四周活细胞数目"""
+        """compute count of living live"""
         game_map = mapping.game_map
         x_coordin = self.x_coordin
         y_coordin = self.y_coordin
@@ -90,7 +86,7 @@ class Cell(object):
         return count
 
     def look_up(self, mapping):
-        """下一代是否还存活"""
+        """set `next` about next genertion if alived"""
         count = self.count_lived_num(mapping)
 
         if count == 2:

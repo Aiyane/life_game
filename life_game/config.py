@@ -1,6 +1,7 @@
 """
-与配置相关的类
+the class about configuration
 """
+
 class ConfigAttribute(object):
     """Makes an attribute forward to the config"""
 
@@ -17,12 +18,12 @@ class ConfigAttribute(object):
 
 
 class Config(dict):
-    """配置类，为简单的字典，key 只接收大写字符"""
+    """configuration"""
     def __init__(self, defaults=None):
         dict.__init__(self, defaults or {})
 
     def from_object(self, obj):
-        """例如:
+        """exmple:
         from yourapplication import default_config
         view.config.from_object(default_config)
         """

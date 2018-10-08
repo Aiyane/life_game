@@ -1,13 +1,13 @@
 """
-与游戏控制有关的类
+about control game
 """
 from life_game import Game
 
 
 class Control(Game):
     """
-    以 `get` 开头的方法, 控制整个游戏过程中的各个属性,
-    自定义需要的属性, 需要重载这些方法.
+    the mothed's name the begin of `get`, can cantrol most attrs about the game.
+    if you want to change these attrs, you can heavy load these mothed.
     """
 
     def __init__(self):
@@ -16,62 +16,90 @@ class Control(Game):
         self.paint_nums = 0
         self.loop_nums = 0
 
+        self.before_control_funcs = []
+        self.after_control_funcs = []
+        self.before_paint_funcs = []
+        self.after_paint_funcs = []
+        self.finally_event_funcs = []
+
+
     @property
     def map_x(self):
-        """游戏地图行数"""
+        """the number of game's row"""
         return self.mapping.map_x
 
     @property
     def map_y(self):
-        """游戏地图列数"""
+        """the number of game's column"""
         return self.mapping.map_y
 
     def start(self):
-        """游戏开始"""
+        """begin of the game"""
         self.init_window()
         self.init_canvas()
         self.init_mapping()
         self.control_loop()
         self.root.mainloop()
-        self.finally_event()
+        for func in self.finally_event_funcs:
+            func(self)
 
     def control_loop(self):
-        """循环控制"""
-        self.before_control()
+        """cycle control"""
+        # self.before_control()
+        self.loop_nums += 1
+        for func in self.before_control_funcs:
+            func(self)
+
         if self.update_cells:
             self.control()
-        self.after_control()
 
-    def before_control(self):
-        """每次控制前的钩子"""
-        self.loop_nums += 1
+        # self.after_control()
+        sleep_time = self.get_sleep_time()
+        self.canvas.after(sleep_time, self.control_loop)
+        for func in self.after_control_funcs:
+            func(self)
+
+    def before_control(self, f):
+        """before control"""
+        self.before_control_funcs.append(f)
+        return f
 
     def control(self):
-        """一次循环控制"""
-        self.before_paint()
-        self.paint()
-        self.after_paint()
-
-    def before_paint(self):
-        """在每次画图前将以存在的图删去
-        保证每一次画图都是将全部活细胞重新绘制
-        """
+        """ont tmie control"""
+        # self.before_paint()
         self.mapping.generate_next()
 
         for cell in self.get_cells():
             if cell.lived and cell.shape_obj:
                 self.canvas.delete(cell.shape_obj)
                 cell.shape_obj = None
+        for func in self.before_paint_funcs:
+            func(self)
 
-    def after_paint(self):
-        """每次细胞生成后的钩子"""
+        self.paint()
+
+        # self.after_paint()
         self.paint_nums += 1
+        for func in self.after_paint_funcs:
+            func(self)
 
-    def after_control(self):
-        """每次控制后的钩子"""
-        sleep_time = self.get_sleep_time()
-        self.canvas.after(sleep_time, self.control_loop)
+    def before_paint(self, f):
+        """delete the existing cells before each drawing
+        """
+        self.before_paint_funcs.append(f)
+        return f
 
-    def finally_event(self):
-        """游戏关闭需要完成的事"""
-        print("经过了" + str(self.paint_nums) + "代，再见!")
+    def after_paint(self, f):
+        """after paint"""
+        self.after_paint_funcs.append(f)
+        return f
+
+    def after_control(self, f):
+        """after control"""
+        self.after_control_funcs.append(f)
+        return f
+
+    def finally_event(self, f):
+        """what you need to do after the game is over"""
+        self.finally_event_funcs.append(f)
+        return f

@@ -4,8 +4,8 @@ setup(
     name="life_game",
     version="0.1",
     keywords=("cells game", "life game"),
-    description="细胞自动机,生命游戏",
-    long_description="一个简单的生命游戏",
+    description="cellular automation, life game",
+    long_description="a simple life game",
     license="MIT Licence",
 
     url="",

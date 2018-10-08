@@ -1,12 +1,12 @@
-"""不可改变字典相关
+"""Dictionary that cannot be chaneged.
 """
 def is_immutable(self):
-    """不可改变的错误"""
-    raise TypeError('%r 对象是不可改变的' % self.__class__.__name__)
+    """when dict modify will raise error"""
+    raise TypeError('%r object is cannot be changed.' % self.__class__.__name__)
 
 
 class ImmutableDict(dict):
-    """一个不可改变的字典"""
+    """a dict that cannot be changed"""
     _hash_cache = None
 
     def __reduce_ex__(self, protocol):
